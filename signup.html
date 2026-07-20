@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FMCT Signup</title>
+</head>
+<body>
+
+<h2>Create Account</h2>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="password" placeholder="Password" type="password"><br><br>
+
+<button onclick="signup()">Sign Up</button>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+
+<script>
+ const firebaseConfig = {
+  apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
+  authDomain: "fmct-58e22.firebaseapp.com",
+  projectId: "fmct-58e22",
+  storageBucket: "fmct-58e22.firebasestorage.app",
+  messagingSenderId: "479095036843",
+  appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  function signup() {
+    let email = document.getElementById("email").value;
+    let pass = document.getElementById("password").value;
+
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(() => {
+        alert("Account created!");
+        window.location.href = "login.html";
+      })
+      .catch(error => alert(error.message));
+  }
+</script>
+
+</body>
+</html>
