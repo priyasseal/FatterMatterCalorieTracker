@@ -1,155 +1,199 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Fatter Matter Calorie Tracker</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            text-align: center;
-            background: linear-gradient(#ffeb99, #ffb84d, #ff9933);
-            color: #5a2e00;
-        }
+  <title>FMCT Burger Sign Up</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #fcecc0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-        header {
-            background-color: #ff9900;
-            padding: 25px;
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            border-bottom: 4px solid #ffcc33;
-        }
+    .burger {
+      width: 380px;
+      text-align: center;
+      transform: scale(1.05);
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+    }
 
-        .button {
-            display: block;
-            margin: 15px auto;
-            padding: 14px;
-            width: 280px;
-            background-color: #ffcc33;
-            color: #5a2e00;
-            text-decoration: none;
-            border-radius: 14px;
-            font-weight: bold;
-            border: 3px solid #ff9900;
-            font-size: 18px;
-            transition: 0.2s;
-        }
+    .bun-top {
+      background: linear-gradient(to bottom, #f9d27a, #e8b85c);
+      height: 130px;
+      border-radius: 200px 200px 60px 60px;
+      box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
 
-        .button:hover {
-            background-color: #ffb84d;
-            transform: scale(1.05);
-        }
+    .layer {
+      width: 100%;
+      min-height: 60px;
+      padding: 15px 0;
+      margin: 18px 0;
+      border-radius: 40px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .section {
-            background: #fff7e6;
-            margin: 40px;
-            padding: 25px;
-            border-radius: 12px;
-            border: 2px solid #ffcc33;
-        }
+    .lettuce {
+      background: repeating-linear-gradient(
+        45deg,
+        #9be27c,
+        #9be27c 10px,
+        #8bd66b 10px,
+        #8bd66b 20px
+      );
+    }
 
-        .placeholder {
-            width: 220px;
-            height: 220px;
-            background: #ffe0b3;
-            margin: auto;
-            border-radius: 12px;
-            padding-top: 80px;
-            color: #5a2e00;
-            font-size: 16px;
-        }
+    .tomato {
+      background: radial-gradient(circle at 30% 30%, #ff7b7b, #ff4d4d);
+    }
 
-        footer {
-            background-color: #ff9900;
-            padding: 15px;
-            color: white;
-            margin-top: 40px;
-            font-weight: bold;
-            border-top: 4px solid #ffcc33;
-        }
-    </style>
+    .cheese {
+      background: linear-gradient(to right, #ffd84d, #ffcc33);
+    }
+
+    .patty {
+      background: repeating-linear-gradient(
+        45deg,
+        #7a3f1a,
+        #7a3f1a 8px,
+        #5a2e00 8px,
+        #5a2e00 16px
+      );
+      border-radius: 30px;
+      height: 65px;
+      margin: 20px 0;
+    }
+
+    .ingredient-input {
+      width: 80%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+      background: rgba(255,255,255,0.9);
+      text-align: center;
+      font-weight: bold;
+      color: #5a2e00;
+    }
+
+    .signup-btn {
+      background: radial-gradient(circle at 30% 30%, #ff7b7b, #ff4d4d);
+      color: white;
+      padding: 14px;
+      width: 90%;
+      border-radius: 20px;
+      border: none;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 20px auto;
+      display: block;
+      transition: 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    }
+
+    .signup-btn:hover {
+      transform: scale(1.05);
+    }
+
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #5a2e00;
+    }
+  </style>
 </head>
 
 <body>
 
-    <header>
-        Fatter Matter Calorie Tracker
-        <p style="font-size:18px; margin:0;">Main Page</p>
-    </header>
+  <div class="burger">
 
-    <!-- ⭐ USER STATUS SECTION ⭐ -->
-    <div id="userStatus" style="margin-top:20px; font-size:20px; font-weight:bold;"></div>
-    <button id="logoutBtn" class="button" style="display:none; width:200px;">Logout</button>
+    <div class="bun-top"></div>
 
-    <!-- ⭐ LOGIN / SIGNUP BUTTONS ⭐ -->
-    <a id="loginBtn" class="button" href="login.html">Login</a>
-    <a id="signupBtn" class="button" href="signup.html">Sign Up</a>
-
-    <h2>Explore the Project</h2>
-
-    <a class="button" href="FMCT_Proj_Purpose.html">Project Purpose</a>
-    <a class="button" href="FMCT_Parts.html">Parts I Used</a>
-    <a class="button" href="FMCT_How_It_Helps.html">How It Helps People</a>
-    <a class="button" href="FMCT_User_Instructions.html">User Instructions</a>
-    <a class="button" href="FMCT_Challenges.html">Challenges I Faced</a>
-
-    <div class="section">
-        <h2>Project Picture</h2>
-        <div class="placeholder">Your picture will go here</div>
+    <div class="layer lettuce">
+      <input class="ingredient-input" id="firstName" placeholder="First Name">
     </div>
 
-    <footer>
-        Fatter Matter Calorie Tracker
-    </footer>
+    <div class="layer lettuce">
+      <input class="ingredient-input" id="lastName" placeholder="Last Name">
+    </div>
 
-<!-- ⭐ FIREBASE SCRIPTS ⭐ -->
+    <div class="layer tomato">
+      <input class="ingredient-input" id="email" placeholder="Email">
+    </div>
+
+    <div class="layer cheese">
+      <input class="ingredient-input" id="password" type="password" placeholder="Password (8–20 chars)">
+    </div>
+
+    <button class="signup-btn" id="signupBtn">Sign Up</button>
+
+    <div class="patty"></div>
+    <div class="bun-bottom"></div>
+  </div>
+
+  <p id="status"></p>
+
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
-  authDomain: "fmct-58e22.firebaseapp.com",
-  projectId: "fmct-58e22",
-  storageBucket: "fmct-58e22.firebasestorage.app",
-  messagingSenderId: "479095036843",
-  appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
-};
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
+      authDomain: "fmct-58e22.firebaseapp.com",
+      projectId: "fmct-58e22",
+      storageBucket: "fmct-58e22.firebasestorage.app",
+      messagingSenderId: "479095036843",
+      appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
+    };
 
-firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+    document.getElementById("signupBtn").onclick = async function() {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const status = document.getElementById("status");
 
-/* ⭐ CHECK IF USER IS LOGGED IN ⭐ */
-auth.onAuthStateChanged(user => {
-    const userStatus = document.getElementById("userStatus");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
+      if (firstName.length < 2) return status.innerHTML = "❌ First name too short!";
+      if (lastName.length < 2) return status.innerHTML = "❌ Last name too short!";
+      if (!email.includes("@")) return status.innerHTML = "❌ Invalid email!";
+      if (password.length < 8 || password.length > 20) return status.innerHTML = "❌ Password must be 8–20 chars!";
 
-    if (user) {
-        userStatus.innerHTML = "Welcome, " + user.email + "!";
-        logoutBtn.style.display = "block";
-        loginBtn.style.display = "none";
-        signupBtn.style.display = "none";
-    } else {
-        userStatus.innerHTML = "You are not logged in.";
-        logoutBtn.style.display = "none";
-        loginBtn.style.display = "block";
-        signupBtn.style.display = "block";
-    }
-});
+      status.innerHTML = "⏳ Creating account...";
 
-/* ⭐ LOGOUT FUNCTION ⭐ */
-document.getElementById("logoutBtn").onclick = function() {
-    auth.signOut().then(() => {
-        alert("Logged out!");
-        window.location.reload();
-    });
-};
-</script>
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        await db.collection("users").doc(user.uid).set({
+          firstName,
+          lastName,
+          email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        status.innerHTML = "🍔 Account created! Redirecting...";
+        setTimeout(() => window.location.href = "index.html", 1000);
+
+      } catch (error) {
+        status.innerHTML = "❌ " + error.message;
+      }
+    };
+  </script>
 
 </body>
 </html>
