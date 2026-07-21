@@ -1,21 +1,170 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FMCT Signup</title>
+  <title>FMCT Burger Sign Up</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #fcecc0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .burger {
+      width: 380px;
+      text-align: center;
+      position: relative;
+      transform: scale(1.05);
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+    }
+
+    /* --- BURGER LAYERS --- */
+    .bun-top {
+      background: linear-gradient(to bottom, #f9d27a, #e8b85c);
+      height: 130px;
+      border-radius: 200px 200px 60px 60px;
+      box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .layer {
+      width: 100%;
+      min-height: 60px;
+      height: auto;
+      padding: 15px 0;
+      margin: 18px 0; /* EXTRA SPACE BETWEEN LAYERS */
+      border-radius: 40px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lettuce {
+      background: repeating-linear-gradient(
+        45deg,
+        #9be27c,
+        #9be27c 10px,
+        #8bd66b 10px,
+        #8bd66b 20px
+      );
+    }
+
+    .tomato {
+      background: radial-gradient(circle at 30% 30%, #ff7b7b, #ff4d4d);
+    }
+
+    .cheese {
+      background: linear-gradient(to right, #ffd84d, #ffcc33);
+    }
+
+    .patty {
+      background: repeating-linear-gradient(
+        45deg,
+        #7a3f1a,
+        #7a3f1a 8px,
+        #5a2e00 8px,
+        #5a2e00 16px
+      );
+      border-radius: 30px;
+      height: 65px;
+      margin: 20px 0;
+    }
+
+    .bun-bottom {
+      background: linear-gradient(to top, #f9d27a, #e8b85c);
+      height: 110px;
+      border-radius: 60px 60px 200px 200px;
+      box-shadow: inset 0 10px 0 rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+
+    /* --- INPUTS --- */
+    .ingredient-input {
+      width: 80%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+      background: rgba(255,255,255,0.9);
+      text-align: center;
+      font-weight: bold;
+      color: #5a2e00;
+    }
+
+    /* --- BUTTON --- */
+    .signup-btn {
+      background: #ff4d4d;
+      color: white;
+      padding: 14px;
+      width: 90%;
+      border-radius: 20px;
+      border: none;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 20px auto;
+      display: block;
+      transition: 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    }
+
+    .signup-btn:hover {
+      background: #ff7373;
+      transform: scale(1.05);
+    }
+
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #5a2e00;
+      text-align: center;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Create Account</h2>
+  <div class="burger">
 
-<input id="email" placeholder="Email"><br><br>
-<input id="password" placeholder="Password" type="password"><br><br>
+    <div class="bun-top"></div>
 
-<button onclick="signup()">Sign Up</button>
+    <div class="layer lettuce">
+      <input class="ingredient-input" type="text" id="firstName" placeholder="First Name">
+    </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <div class="layer lettuce">
+      <input class="ingredient-input" type="text" id="lastName" placeholder="Last Name">
+    </div>
 
-<script>
+    <div class="layer tomato">
+      <input class="ingredient-input" type="email" id="email" placeholder="Email">
+    </div>
+
+    <div class="layer cheese">
+      <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
+    </div>
+
+    <button class="signup-btn" id="signupBtn">Sign Up</button>
+
+    <div class="patty"></div>
+
+    <div class="bun-bottom"></div>
+  </div>
+
+  <p id="status"></p>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script>
  const firebaseConfig = {
   apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
   authDomain: "fmct-58e22.firebaseapp.com",
@@ -24,22 +173,42 @@
   messagingSenderId: "479095036843",
   appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
 };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+    document.getElementById("signupBtn").onclick = async function() {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const status = document.getElementById("status");
 
-  function signup() {
-    let email = document.getElementById("email").value;
-    let pass = document.getElementById("password").value;
+      if (firstName.length < 2) return status.innerHTML = "❌ First name too short!";
+      if (lastName.length < 2) return status.innerHTML = "❌ Last name too short!";
+      if (!email.includes("@") || !email.includes(".")) return status.innerHTML = "❌ Invalid email!";
+      if (password.length < 8 || password.length > 20) return status.innerHTML = "❌ Password must be 8–20 chars!";
 
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(() => {
-        alert("Account created!");
-        window.location.href = "login.html";
-      })
-      .catch(error => alert(error.message));
-  }
-</script>
+      status.innerHTML = "⏳ Cooking your account...";
 
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        await db.collection("users").doc(user.uid).set({
+          firstName,
+          lastName,
+          email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        status.innerHTML = "🍔 Account ready! Redirecting...";
+        setTimeout(() => window.location.href = "index.html", 1000);
+
+      } catch (error) {
+        status.innerHTML = "❌ " + error.message;
+      }
+    };
+  </script>
 </body>
 </html>
