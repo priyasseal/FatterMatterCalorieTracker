@@ -118,14 +118,26 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ⭐ SHOW WELCOME MESSAGE ⭐
+        // ⭐ FIXED WELCOME MESSAGE ⭐
         auth.onAuthStateChanged(async (user) => {
             const status = document.getElementById("status");
 
             if (user) {
                 const doc = await db.collection("users").doc(user.uid).get();
-                const data = doc.data();
-                status.innerHTML = "Welcome, " + data.firstName + "!";
+
+                if (doc.exists) {
+                    const data = doc.data();
+
+                    if (data && data.firstName) {
+                        status.innerHTML = "Welcome, " + data.firstName + "!";
+                    } else {
+                        status.innerHTML = "Welcome!";
+                    }
+
+                } else {
+                    status.innerHTML = "Welcome!";
+                }
+
             } else {
                 status.innerHTML = "You are not logged in.";
             }
