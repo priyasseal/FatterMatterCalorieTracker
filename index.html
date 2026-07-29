@@ -77,9 +77,10 @@
 
     <h2>Account</h2>
 
-    <!-- ⭐ LOGIN / SIGNUP BUTTONS ⭐ -->
-    <a class="button" href="login.html">Login</a>
-    <a class="button" href="signup.html">Sign Up</a>
+    <!-- ⭐ BUTTONS ⭐ -->
+    <a class="button" id="loginBtn" href="login.html">Login</a>
+    <a class="button" id="signupBtn" href="signup.html">Sign Up</a>
+    <button class="button" id="logoutBtn" style="display:none;">Sign Out</button>
 
     <h2>Links</h2>
 
@@ -118,30 +119,43 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ⭐ FIXED WELCOME MESSAGE ⭐
+        const loginBtn = document.getElementById("loginBtn");
+        const signupBtn = document.getElementById("signupBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+
         auth.onAuthStateChanged(async (user) => {
             const status = document.getElementById("status");
 
             if (user) {
                 const doc = await db.collection("users").doc(user.uid).get();
 
-                if (doc.exists) {
-                    const data = doc.data();
-
-                    if (data && data.firstName) {
-                        status.innerHTML = "Welcome, " + data.firstName + "!";
-                    } else {
-                        status.innerHTML = "Welcome!";
-                    }
-
-                } else {
-                    status.innerHTML = "Welcome!";
+                let name = "Welcome!";
+                if (doc.exists && doc.data().firstName) {
+                    name = "Welcome, " + doc.data().firstName + "!";
                 }
+
+                status.innerHTML = name;
+
+                // ⭐ Hide login/signup, show logout
+                loginBtn.style.display = "none";
+                signupBtn.style.display = "none";
+                logoutBtn.style.display = "block";
 
             } else {
                 status.innerHTML = "You are not logged in.";
+
+                // ⭐ Show login/signup, hide logout
+                loginBtn.style.display = "block";
+                signupBtn.style.display = "block";
+                logoutBtn.style.display = "none";
             }
         });
+
+        // ⭐ SIGN OUT ⭐
+        logoutBtn.onclick = async () => {
+            await auth.signOut();
+            window.location.reload();
+        };
     </script>
 
 </body>
