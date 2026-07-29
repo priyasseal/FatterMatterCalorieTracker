@@ -77,9 +77,11 @@
 
     <h2>Account</h2>
 
-    <!-- ⭐ BUTTONS ⭐ -->
+    <!-- ⭐ LOGIN / SIGNUP (only when logged out) ⭐ -->
     <a class="button" id="loginBtn" href="login.html">Login</a>
     <a class="button" id="signupBtn" href="signup.html">Sign Up</a>
+
+    <!-- ⭐ SIGN OUT (only when logged in) ⭐ -->
     <button class="button" id="logoutBtn" style="display:none;">Sign Out</button>
 
     <h2>Links</h2>
@@ -136,7 +138,7 @@
 
                 status.innerHTML = name;
 
-                // ⭐ Hide login/signup, show logout
+                // ⭐ SHOW ONLY SIGN OUT
                 loginBtn.style.display = "none";
                 signupBtn.style.display = "none";
                 logoutBtn.style.display = "block";
@@ -144,7 +146,7 @@
             } else {
                 status.innerHTML = "You are not logged in.";
 
-                // ⭐ Show login/signup, hide logout
+                // ⭐ SHOW LOGIN + SIGNUP, HIDE SIGN OUT
                 loginBtn.style.display = "block";
                 signupBtn.style.display = "block";
                 logoutBtn.style.display = "none";
