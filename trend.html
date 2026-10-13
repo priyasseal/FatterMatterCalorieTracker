@@ -6,34 +6,42 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { 
-            background: linear-gradient(to bottom, #ffc107, #ffe5b4); 
+            background: linear-gradient(#ffeb99, #ffb84d, #ff9933); 
             font-family: Arial, sans-serif; 
             text-align: center; 
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            color: #5a2e00;
         }
-        h1 { color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        h1 { color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
         .container { 
             width: 80%; 
             margin: 30px auto; 
-            background: rgba(255, 255, 255, 0.95); 
+            background: #fff7e6; 
             padding: 30px; 
             border-radius: 12px; 
+            border: 2px solid #ffcc33;
             box-shadow: 0px 4px 15px rgba(0,0,0,0.15); 
         }
         canvas { max-height: 450px; width: 100% !important; }
         .back-btn {
             display: inline-block;
             margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
+            padding: 12px 24px;
+            background-color: #ffcc33;
+            color: #5a2e00;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 12px;
             font-weight: bold;
+            border: 2px solid #ff9900;
         }
-        .back-btn:hover { background-color: #555; }
+        .back-btn:hover { background-color: #ffb84d; }
+        .status-badge {
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -42,7 +50,8 @@
     
     <div class="container">
         <h2>Bobbington's Daily Nutrition Trend</h2>
-        <p>Total daily caloric consumption aggregated from all scanned products.</p>
+        <p>Total daily caloric consumption aggregated live from Firestore.</p>
+        <p class="status-badge" id="liveStatus">🔄 Live Sync Enabled (Refreshing every 10s)</p>
         
         <canvas id="dailyTrendChart"></canvas>
         
@@ -52,6 +61,7 @@
 
     <script>
         const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/fmct-58e22/databases/(default)/documents/fmct_items";
+        let trendChart = null;
 
         async function loadDailyTrend() {
             try {
@@ -81,44 +91,62 @@
                 let caloriesData = sortedDates.map(date => dailyCalories[date]);
 
                 const ctx = document.getElementById('dailyTrendChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: sortedDates,
-                        datasets: [{
-                            label: 'Total Daily Calories (kcal)',
-                            data: caloriesData,
-                            borderColor: '#ff7043',
-                            backgroundColor: 'rgba(255, 112, 67, 0.2)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.2,
-                            pointRadius: 7,
-                            pointBackgroundColor: '#ff7043'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: true, position: 'top' }
+
+                // Update existing chart if already built, otherwise create new chart
+                if (trendChart) {
+                    trendChart.data.labels = sortedDates;
+                    trendChart.data.datasets[0].data = caloriesData;
+                    trendChart.update();
+                } else {
+                    trendChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: sortedDates,
+                            datasets: [{
+                                label: 'Total Daily Calories (kcal)',
+                                data: caloriesData,
+                                borderColor: '#ff9900',
+                                backgroundColor: 'rgba(255, 153, 0, 0.2)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.2,
+                                pointRadius: 7,
+                                pointBackgroundColor: '#ff9900'
+                            }]
                         },
-                        scales: {
-                            y: { 
-                                beginAtZero: true,
-                                title: { display: true, text: 'Calories (kcal)' }
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: true, position: 'top' }
                             },
-                            x: {
-                                title: { display: true, text: 'Date' }
+                            scales: {
+                                y: { 
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'Calories (kcal)' }
+                                },
+                                x: {
+                                    title: { display: true, text: 'Date' }
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
+
+                // Update timestamp indicator
+                const now = new Date().toLocaleTimeString();
+                document.getElementById("liveStatus").innerText = `🟢 Live Sync Active (Last updated: ${now})`;
+
             } catch (error) {
                 console.error("Error fetching Firestore daily trend data:", error);
+                document.getElementById("liveStatus").innerText = "🔴 Live Sync Error - Retrying...";
             }
         }
 
+        // Initial Load
         loadDailyTrend();
+
+        // Auto-refresh every 10 seconds (10,000 ms)
+        setInterval(loadDailyTrend, 10000);
     </script>
 </body>
 </html>
