@@ -1,42 +1,85 @@
+Here is your updated **`signup.html`** with the side-by-side flex layout, shifting the burger to the left, adding a **"← Back to Main Page"** button underneath, and adding a matching **"Join FMCT!"** info card on the right side:
+
+```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>FMCT Burger Sign Up</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: #fcecc0;
+      background: linear-gradient(#ffeb99, #ffb84d, #ff9933);
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      color: #5a2e00;
+    }
+
+    /* --- SPLIT LAYOUT CONTAINER --- */
+    .page-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      max-width: 950px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    .burger-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .burger {
       width: 380px;
       text-align: center;
       position: relative;
-      transform: scale(1.05);
       filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
     }
 
     /* --- BURGER LAYERS --- */
     .bun-top {
       background: linear-gradient(to bottom, #f9d27a, #e8b85c);
-      height: 130px;
+      height: 120px;
       border-radius: 200px 200px 60px 60px;
       box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
       margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .bun-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+      margin: 0;
+    }
+
+    .sesame {
+      position: absolute;
+      width: 8px;
+      height: 4px;
+      background: #fff8dc;
+      border-radius: 50%;
+      opacity: 0.8;
     }
 
     .layer {
       width: 100%;
-      min-height: 60px;
+      min-height: 55px;
       height: auto;
-      padding: 15px 0;
-      margin: 18px 0; /* EXTRA SPACE BETWEEN LAYERS */
+      padding: 12px 0;
+      margin: 14px 0;
       border-radius: 40px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.15);
       display: flex;
@@ -77,7 +120,7 @@
 
     .bun-bottom {
       background: linear-gradient(to top, #f9d27a, #e8b85c);
-      height: 110px;
+      height: 100px;
       border-radius: 60px 60px 200px 200px;
       box-shadow: inset 0 10px 0 rgba(0,0,0,0.1);
       margin-top: 20px;
@@ -86,29 +129,35 @@
     /* --- INPUTS --- */
     .ingredient-input {
       width: 80%;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 16px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      font-size: 15px;
       outline: none;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.92);
       text-align: center;
       font-weight: bold;
       color: #5a2e00;
+      transition: 0.2s;
     }
 
-    /* --- BUTTON --- */
+    .ingredient-input:focus {
+      border: 2px solid #5a2e00;
+      background: #ffffff;
+    }
+
+    /* --- BUTTONS --- */
     .signup-btn {
       background: #ff4d4d;
       color: white;
       padding: 14px;
       width: 90%;
       border-radius: 20px;
-      border: none;
-      font-size: 20px;
+      border: 2px solid #e63946;
+      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
-      margin: 20px auto;
+      margin: 15px auto 5px auto;
       display: block;
       transition: 0.2s;
       box-shadow: 0 4px 6px rgba(0,0,0,0.15);
@@ -116,48 +165,154 @@
 
     .signup-btn:hover {
       background: #ff7373;
-      transform: scale(1.05);
+      transform: scale(1.03);
+    }
+
+    .login-link {
+      color: #5a2e00;
+      font-size: 13px;
+      font-weight: bold;
+      text-decoration: underline;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 8px 16px;
+      background-color: #fff7e6;
+      color: #5a2e00;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: bold;
+      border: 2px solid #ffcc33;
+      font-size: 13px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+
+    .back-btn:hover {
+      background-color: #ffe0b3;
     }
 
     #status {
-      margin-top: 20px;
+      margin-top: 10px;
       font-weight: bold;
       color: #5a2e00;
       text-align: center;
+      font-size: 14px;
+      min-height: 20px;
+    }
+
+    /* --- RIGHT SIDE INFO CARD --- */
+    .info-card {
+      background: #fff7e6;
+      width: 320px;
+      padding: 25px;
+      border-radius: 20px;
+      border: 3px solid #ffcc33;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+      text-align: left;
+    }
+
+    .info-card h3 {
+      color: #d35400;
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .info-card p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #5a2e00;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0 0 0;
+    }
+
+    .feature-list li {
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .page-container {
+        flex-direction: column;
+        gap: 30px;
+      }
+      .info-card {
+        width: 85%;
+        text-align: center;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="burger">
+  <div class="page-container">
 
-    <div class="bun-top"></div>
+    <!-- LEFT: BURGER SIGN UP FORM -->
+    <div class="burger-wrapper">
+      <div class="burger">
 
-    <div class="layer lettuce">
-      <input class="ingredient-input" type="text" id="firstName" placeholder="First Name">
+        <div class="bun-top">
+          <div class="sesame" style="top: 20px; left: 60px;"></div>
+          <div class="sesame" style="top: 30px; left: 170px;"></div>
+          <div class="sesame" style="top: 25px; left: 280px;"></div>
+          <h2 class="bun-title">FMCT Sign Up</h2>
+        </div>
+
+        <div class="layer lettuce">
+          <input class="ingredient-input" type="text" id="firstName" placeholder="First Name">
+        </div>
+
+        <div class="layer lettuce">
+          <input class="ingredient-input" type="text" id="lastName" placeholder="Last Name">
+        </div>
+
+        <div class="layer tomato">
+          <input class="ingredient-input" type="email" id="email" placeholder="Email">
+        </div>
+
+        <div class="layer cheese">
+          <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
+        </div>
+
+        <button class="signup-btn" id="signupBtn">Sign Up</button>
+        <a href="login.html" class="login-link">Already have an account? Login here!</a>
+
+        <div class="patty"></div>
+
+        <div class="bun-bottom"></div>
+      </div>
+
+      <p id="status"></p>
+
+      <!-- BACK TO MAIN PAGE BUTTON -->
+      <a href="index.html" class="back-btn">← Back to Main Page</a>
     </div>
 
-    <div class="layer lettuce">
-      <input class="ingredient-input" type="text" id="lastName" placeholder="Last Name">
+    <!-- RIGHT: FILLER INFO CARD -->
+    <div class="info-card">
+      <h3>✨ Join Fatter Matter!</h3>
+      <p>Create your personal profile to start logging calories live from your Raspberry Pi Pico W scanner.</p>
+      
+      <ul class="feature-list">
+        <li>🏷️ <b>Unique Profiles:</b> Personalized dashboard view.</li>
+        <li>📊 <b>Daily Tracking:</b> Aggregated real-time nutrition stats.</li>
+        <li>🔐 <b>Secure Auth:</b> Cloud-backed Firebase account.</li>
+      </ul>
+
+      <p style="margin-top: 20px; font-size: 13px; opacity: 0.8; text-align: center;">Get started in seconds! 🍔</p>
     </div>
 
-    <div class="layer tomato">
-      <input class="ingredient-input" type="email" id="email" placeholder="Email">
-    </div>
-
-    <div class="layer cheese">
-      <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
-    </div>
-
-    <button class="signup-btn" id="signupBtn">Sign Up</button>
-
-    <div class="patty"></div>
-
-    <div class="bun-bottom"></div>
   </div>
-
-  <p id="status"></p>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -165,14 +320,15 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <script>
- const firebaseConfig = {
-  apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
-  authDomain: "fmct-58e22.firebaseapp.com",
-  projectId: "fmct-58e22",
-  storageBucket: "fmct-58e22.firebasestorage.app",
-  messagingSenderId: "479095036843",
-  appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
+      authDomain: "fmct-58e22.firebaseapp.com",
+      projectId: "fmct-58e22",
+      storageBucket: "fmct-58e22.firebasestorage.app",
+      messagingSenderId: "479095036843",
+      appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -209,6 +365,12 @@
         status.innerHTML = "❌ " + error.message;
       }
     };
+
+    document.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") document.getElementById("signupBtn").click();
+    });
   </script>
 </body>
 </html>
+
+```
