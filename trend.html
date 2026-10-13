@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FMCT - Daily Nutrition Trend</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            background: linear-gradient(to bottom, #ffc107, #ffe5b4); 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 { color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .container { 
+            width: 80%; 
+            margin: 30px auto; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.15); 
+        }
+        canvas { max-height: 450px; width: 100% !important; }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .back-btn:hover { background-color: #555; }
+    </style>
+</head>
+<body>
+
+    <h1>Fatter Matter Calorie Tracker</h1>
+    
+    <div class="container">
+        <h2>Bobbington's Daily Nutrition Trend</h2>
+        <p>Total daily caloric consumption aggregated from all scanned products.</p>
+        
+        <canvas id="dailyTrendChart"></canvas>
+        
+        <br>
+        <a href="index.html" class="back-btn">← Back to Main Page</a>
+    </div>
+
+    <script>
+        const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/fmct-58e22/databases/(default)/documents/fmct_items";
+
+        async function loadDailyTrend() {
+            try {
+                const response = await fetch(FIRESTORE_URL);
+                const data = await response.json();
+
+                let dailyCalories = {};
+
+                if (data.documents) {
+                    data.documents.forEach(doc => {
+                        let fields = doc.fields;
+                        let dateStr = fields.date ? fields.date.stringValue : "Unknown Date";
+                        let calStr = fields.calories ? fields.calories.stringValue : "0";
+                        let calVal = parseFloat(calStr.replace(/[^0-9.]/g, "")) || 0;
+
+                        // Aggregate calories per day
+                        if (dailyCalories[dateStr]) {
+                            dailyCalories[dateStr] += calVal;
+                        } else {
+                            dailyCalories[dateStr] = calVal;
+                        }
+                    });
+                }
+
+                // Sort dates chronologically
+                let sortedDates = Object.keys(dailyCalories).sort();
+                let caloriesData = sortedDates.map(date => dailyCalories[date]);
+
+                const ctx = document.getElementById('dailyTrendChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: sortedDates,
+                        datasets: [{
+                            label: 'Total Daily Calories (kcal)',
+                            data: caloriesData,
+                            borderColor: '#ff7043',
+                            backgroundColor: 'rgba(255, 112, 67, 0.2)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.2,
+                            pointRadius: 7,
+                            pointBackgroundColor: '#ff7043'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true, position: 'top' }
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true,
+                                title: { display: true, text: 'Calories (kcal)' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Date' }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching Firestore daily trend data:", error);
+            }
+        }
+
+        loadDailyTrend();
+    </script>
+</body>
+</html>
