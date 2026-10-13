@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FMCT - Burger Auth</title>
+  <title>FMCT - Burger Login</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
       background: linear-gradient(#ffeb99, #ffb84d, #ff9933);
       margin: 0;
-      padding: 20px 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,11 +16,27 @@
       color: #5a2e00;
     }
 
+    /* --- SPLIT LAYOUT CONTAINER --- */
+    .page-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      max-width: 900px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    .burger-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .burger {
       width: 360px;
       text-align: center;
       filter: drop-shadow(0 10px 15px rgba(0,0,0,0.25));
-      transition: all 0.3s ease;
     }
 
     /* --- TOP BUN & SESAME SEEDS --- */
@@ -148,6 +164,7 @@
       cursor: pointer;
       text-decoration: underline;
       margin-top: 10px;
+      display: inline-block;
     }
 
     #status {
@@ -156,45 +173,135 @@
       font-size: 14px;
       min-height: 20px;
     }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 8px 16px;
+      background-color: #fff7e6;
+      color: #5a2e00;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: bold;
+      border: 2px solid #ffcc33;
+      font-size: 13px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+
+    .back-btn:hover {
+      background-color: #ffe0b3;
+    }
+
+    /* --- RIGHT SIDE INFO CARD --- -->
+    .info-card {
+      background: #fff7e6;
+      width: 320px;
+      padding: 25px;
+      border-radius: 20px;
+      border: 3px solid #ffcc33;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+      text-align: left;
+    }
+
+    .info-card h3 {
+      color: #d35400;
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .info-card p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #5a2e00;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0 0 0;
+    }
+
+    .feature-list li {
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Responsive adjustment for small screens */
+    @media (max-width: 768px) {
+      .page-container {
+        flex-direction: column;
+        gap: 30px;
+      }
+      .info-card {
+        width: 85%;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  <div class="burger">
+  <div class="page-container">
 
-    <!-- TOP BUN WITH TITLE & SEEDS -->
-    <div class="bun-top">
-      <div class="sesame" style="top: 20px; left: 80px;"></div>
-      <div class="sesame" style="top: 30px; left: 180px;"></div>
-      <div class="sesame" style="top: 25px; left: 280px;"></div>
-      <h2 class="bun-title" id="formTitle">FMCT Login</h2>
+    <!-- LEFT: BURGER LOGIN FORM -->
+    <div class="burger-wrapper">
+      <div class="burger">
+
+        <!-- TOP BUN WITH TITLE & SEEDS -->
+        <div class="bun-top">
+          <div class="sesame" style="top: 20px; left: 60px;"></div>
+          <div class="sesame" style="top: 30px; left: 160px;"></div>
+          <div class="sesame" style="top: 25px; left: 260px;"></div>
+          <h2 class="bun-title" id="formTitle">FMCT Login</h2>
+        </div>
+
+        <!-- FIRST NAME FIELD (Hidden by default for Login) -->
+        <div class="layer lettuce" id="firstNameLayer" style="display: none;">
+          <input class="ingredient-input" type="text" id="firstName" placeholder="First Name (e.g. Bobbington)">
+        </div>
+
+        <!-- EMAIL LAYER -->
+        <div class="layer tomato">
+          <input class="ingredient-input" type="email" id="email" placeholder="Email Address">
+        </div>
+
+        <!-- PASSWORD LAYER -->
+        <div class="layer cheese">
+          <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
+        </div>
+
+        <!-- ACTION BUTTON -->
+        <button class="auth-btn" id="submitBtn">Login</button>
+
+        <!-- STATUS & TOGGLE -->
+        <p id="status"></p>
+        <span class="toggle-text" id="toggleMode">Need an account? Sign Up here!</span>
+
+        <div class="patty"></div>
+        <div class="bun-bottom"></div>
+      </div>
+
+      <!-- BACK TO MAIN PAGE BUTTON -->
+      <a href="index.html" class="back-btn">← Back to Main Page</a>
     </div>
 
-    <!-- FIRST NAME FIELD (Hidden by default for Login) -->
-    <div class="layer lettuce" id="firstNameLayer" style="display: none;">
-      <input class="ingredient-input" type="text" id="firstName" placeholder="First Name (e.g. Bobbington)">
+    <!-- RIGHT: FILLER INFO CARD -->
+    <div class="info-card">
+      <h3>🍔 Welcome to FMCT!</h3>
+      <p>The cloud-connected nutritional tracking dashboard powered by hardware telemetry.</p>
+      
+      <ul class="feature-list">
+        <li>⚡ <b>Pico W Integration:</b> Real-time barcode scanning.</li>
+        <li>☁️ <b>Cloud Sync:</b> Powered by Google Cloud Firestore.</li>
+        <li>📈 <b>Live Trends:</b> Interactive daily calorie charts.</li>
+      </ul>
+
+      <p style="margin-top: 20px; font-size: 13px; opacity: 0.8; text-align: center;">Scan smarter, eat healthier! ✨</p>
     </div>
 
-    <!-- EMAIL LAYER -->
-    <div class="layer tomato">
-      <input class="ingredient-input" type="email" id="email" placeholder="Email Address">
-    </div>
-
-    <!-- PASSWORD LAYER -->
-    <div class="layer cheese">
-      <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
-    </div>
-
-    <!-- ACTION BUTTON -->
-    <button class="auth-btn" id="submitBtn">Login</button>
-
-    <!-- STATUS & TOGGLE -->
-    <p id="status"></p>
-    <span class="toggle-text" id="toggleMode">Need an account? Sign Up here!</span>
-
-    <div class="patty"></div>
-    <div class="bun-bottom"></div>
   </div>
 
   <!-- Firebase SDKs -->
@@ -261,11 +368,9 @@
 
       try {
         if (isSignUp) {
-          // 1. Create user in Firebase Auth
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
           const uid = userCredential.user.uid;
 
-          // 2. Save First Name in Firestore
           await db.collection("users").doc(uid).set({
             firstName: firstName,
             email: email,
@@ -274,7 +379,6 @@
 
           status.innerHTML = "🍔 Account created! Redirecting...";
         } else {
-          // Login existing user
           await auth.signInWithEmailAndPassword(email, password);
           status.innerHTML = "🍔 Logged in! Redirecting...";
         }
@@ -286,7 +390,6 @@
       }
     };
 
-    // Allow pressing 'Enter' key to submit
     document.addEventListener("keypress", (e) => {
       if (e.key === "Enter") submitBtn.click();
     });
