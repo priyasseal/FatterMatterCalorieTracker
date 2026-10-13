@@ -1,54 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>FMCT Burger Login</title>
+  <meta charset="UTF-8">
+  <title>FMCT - Burger Auth</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: #fcecc0;
+      background: linear-gradient(#ffeb99, #ffb84d, #ff9933);
       margin: 0;
-      padding: 0;
+      padding: 20px 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      color: #5a2e00;
     }
 
     .burger {
-      width: 380px;
+      width: 360px;
       text-align: center;
-      transform: scale(1.05);
-      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.25));
+      transition: all 0.3s ease;
     }
 
-    /* --- BUNS --- */
+    /* --- TOP BUN & SESAME SEEDS --- */
     .bun-top {
       background: linear-gradient(to bottom, #f9d27a, #e8b85c);
-      height: 130px;
-      border-radius: 200px 200px 60px 60px;
-      box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      height: 110px;
+      border-radius: 200px 200px 40px 40px;
+      box-shadow: inset 0 -8px 0 rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
     }
 
-    .bun-bottom {
-      background: linear-gradient(to top, #f9d27a, #e8b85c);
-      height: 110px;
-      border-radius: 60px 60px 200px 200px;
-      box-shadow: inset 0 10px 0 rgba(0,0,0,0.1);
-      margin-top: 20px;
+    .bun-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+      margin: 0;
+    }
+
+    .sesame {
+      position: absolute;
+      width: 8px;
+      height: 4px;
+      background: #fff8dc;
+      border-radius: 50%;
+      opacity: 0.8;
     }
 
     /* --- LAYERS --- */
     .layer {
       width: 100%;
-      min-height: 60px;
-      padding: 15px 0;
-      margin: 18px 0;
-      border-radius: 40px;
+      min-height: 55px;
+      padding: 10px 0;
+      margin: 12px 0;
+      border-radius: 30px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.15);
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    .lettuce {
+      background: linear-gradient(to right, #7bc043, #4bc043);
     }
 
     .tomato {
@@ -68,51 +87,74 @@
         #5a2e00 16px
       );
       border-radius: 30px;
-      height: 65px;
-      margin: 20px 0;
+      height: 55px;
+      margin: 15px 0;
+    }
+
+    .bun-bottom {
+      background: linear-gradient(to top, #f9d27a, #e8b85c);
+      height: 80px;
+      border-radius: 40px 40px 180px 180px;
+      box-shadow: inset 0 8px 0 rgba(0,0,0,0.1);
+      margin-top: 15px;
     }
 
     /* --- INPUTS --- */
     .ingredient-input {
-      width: 80%;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 16px;
+      width: 82%;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 2px solid transparent;
+      font-size: 15px;
       outline: none;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.95);
       text-align: center;
       font-weight: bold;
       color: #5a2e00;
+      transition: 0.2s;
     }
 
-    /* --- BUTTON --- */
-    .login-btn {
+    .ingredient-input:focus {
+      border: 2px solid #5a2e00;
+      background: #ffffff;
+    }
+
+    /* --- BUTTON & TOGGLES --- */
+    .auth-btn {
       background: radial-gradient(circle at 30% 30%, #ff7b7b, #ff4d4d);
       color: white;
-      padding: 14px;
-      width: 90%;
+      padding: 12px;
+      width: 88%;
       border-radius: 20px;
-      border: none;
-      font-size: 20px;
+      border: 2px solid #e63946;
+      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
-      margin: 20px auto;
+      margin: 15px auto;
       display: block;
       transition: 0.2s;
       box-shadow: 0 4px 6px rgba(0,0,0,0.15);
     }
 
-    .login-btn:hover {
-      background: #ff7373;
-      transform: scale(1.05);
+    .auth-btn:hover {
+      background: #ff5252;
+      transform: scale(1.03);
+    }
+
+    .toggle-text {
+      color: #5a2e00;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 10px;
     }
 
     #status {
-      margin-top: 20px;
+      margin-top: 10px;
       font-weight: bold;
-      color: #5a2e00;
-      text-align: center;
+      font-size: 14px;
+      min-height: 20px;
     }
   </style>
 </head>
@@ -121,58 +163,133 @@
 
   <div class="burger">
 
-    <div class="bun-top"></div>
-
-    <div class="layer tomato">
-      <input class="ingredient-input" type="email" id="email" placeholder="Email">
+    <!-- TOP BUN WITH TITLE & SEEDS -->
+    <div class="bun-top">
+      <div class="sesame" style="top: 20px; left: 80px;"></div>
+      <div class="sesame" style="top: 30px; left: 180px;"></div>
+      <div class="sesame" style="top: 25px; left: 280px;"></div>
+      <h2 class="bun-title" id="formTitle">FMCT Login</h2>
     </div>
 
+    <!-- FIRST NAME FIELD (Hidden by default for Login) -->
+    <div class="layer lettuce" id="firstNameLayer" style="display: none;">
+      <input class="ingredient-input" type="text" id="firstName" placeholder="First Name (e.g. Bobbington)">
+    </div>
+
+    <!-- EMAIL LAYER -->
+    <div class="layer tomato">
+      <input class="ingredient-input" type="email" id="email" placeholder="Email Address">
+    </div>
+
+    <!-- PASSWORD LAYER -->
     <div class="layer cheese">
       <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
     </div>
 
-    <button class="login-btn" id="loginBtn">Login</button>
+    <!-- ACTION BUTTON -->
+    <button class="auth-btn" id="submitBtn">Login</button>
+
+    <!-- STATUS & TOGGLE -->
+    <p id="status"></p>
+    <span class="toggle-text" id="toggleMode">Need an account? Sign Up here!</span>
 
     <div class="patty"></div>
     <div class="bun-bottom"></div>
   </div>
 
-  <p id="status"></p>
-
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <script>
- const firebaseConfig = {
-  apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
-  authDomain: "fmct-58e22.firebaseapp.com",
-  projectId: "fmct-58e22",
-  storageBucket: "fmct-58e22.firebasestorage.app",
-  messagingSenderId: "479095036843",
-  appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
+      authDomain: "fmct-58e22.firebaseapp.com",
+      projectId: "fmct-58e22",
+      storageBucket: "fmct-58e22.firebasestorage.app",
+      messagingSenderId: "479095036843",
+      appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    document.getElementById("loginBtn").onclick = async function() {
+    let isSignUp = false;
+
+    const formTitle = document.getElementById("formTitle");
+    const firstNameLayer = document.getElementById("firstNameLayer");
+    const submitBtn = document.getElementById("submitBtn");
+    const toggleMode = document.getElementById("toggleMode");
+    const status = document.getElementById("status");
+
+    // Toggle between Login and Sign Up modes
+    toggleMode.onclick = () => {
+      isSignUp = !isSignUp;
+      status.innerText = "";
+      if (isSignUp) {
+        formTitle.innerText = "FMCT Sign Up";
+        submitBtn.innerText = "Create Account";
+        firstNameLayer.style.display = "flex";
+        toggleMode.innerText = "Already have an account? Login!";
+      } else {
+        formTitle.innerText = "FMCT Login";
+        submitBtn.innerText = "Login";
+        firstNameLayer.style.display = "none";
+        toggleMode.innerText = "Need an account? Sign Up here!";
+      }
+    };
+
+    // Handle Auth Submission
+    submitBtn.onclick = async () => {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-      const status = document.getElementById("status");
+      const firstName = document.getElementById("firstName").value.trim();
 
-      if (!email.includes("@") || !email.includes(".")) return status.innerHTML = "❌ Invalid email!";
-      if (password.length < 8 || password.length > 20) return status.innerHTML = "❌ Password must be 8–20 chars!";
+      if (!email.includes("@") || !email.includes(".")) {
+        return status.innerHTML = "❌ Invalid email address!";
+      }
+      if (password.length < 8 || password.length > 20) {
+        return status.innerHTML = "❌ Password must be 8–20 characters!";
+      }
+      if (isSignUp && !firstName) {
+        return status.innerHTML = "❌ Please enter your First Name!";
+      }
 
-      status.innerHTML = "⏳ Logging in...";
+      status.innerHTML = isSignUp ? "⏳ Creating account..." : "⏳ Logging in...";
 
       try {
-        await auth.signInWithEmailAndPassword(email, password);
-        status.innerHTML = "🍔 Logged in! Redirecting...";
-        setTimeout(() => window.location.href = "index.html", 1000);
+        if (isSignUp) {
+          // 1. Create user in Firebase Auth
+          const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+          const uid = userCredential.user.uid;
+
+          // 2. Save First Name in Firestore
+          await db.collection("users").doc(uid).set({
+            firstName: firstName,
+            email: email,
+            createdAt: new Date().toISOString()
+          });
+
+          status.innerHTML = "🍔 Account created! Redirecting...";
+        } else {
+          // Login existing user
+          await auth.signInWithEmailAndPassword(email, password);
+          status.innerHTML = "🍔 Logged in! Redirecting...";
+        }
+
+        setTimeout(() => { window.location.href = "index.html"; }, 1000);
+
       } catch (error) {
         status.innerHTML = "❌ " + error.message;
       }
     };
+
+    // Allow pressing 'Enter' key to submit
+    document.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") submitBtn.click();
+    });
   </script>
 </body>
 </html>
