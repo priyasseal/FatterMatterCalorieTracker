@@ -244,8 +244,8 @@
 
         <!-- ⭐ EMBEDDED LIVE NUTRITION TREND CHART ⭐ -->
         <div class="chart-card">
-            <h2>📈 Bobbington's Daily Nutrition Trend</h2>
-            <p class="chart-status" id="chartStatus">🔄 Syncing with Bobbington's Scanner...</p>
+            <h2>📈 Daily Nutrition Trend</h2>
+            <p class="chart-status" id="chartStatus">🔄 Syncing with hardware device...</p>
             <canvas id="dailyTrendChart"></canvas>
         </div>
 
@@ -296,7 +296,7 @@
         const signupBtn = document.getElementById("signupBtn");
         const logoutBtn = document.getElementById("logoutBtn");
 
-        // Hardcode Bobbington's UID as the target device owner
+        // Bobbington's hardware device UID
         const BOBBINGTON_UID = "gZ4DxtuBwTbw08XGnCrs3Fx4uiB2";
 
         auth.onAuthStateChanged(async (user) => {
@@ -313,7 +313,8 @@
                 signupBtn.style.display = "none";
                 logoutBtn.style.display = "inline-block";
             } else {
-                status.innerHTML = "👋 Welcome, Guest! Viewing Bobbington's Tracker.";
+                // Privacy-friendly greeting when logged out
+                status.innerHTML = "👋 Welcome to Fatter Matter!";
                 loginBtn.style.display = "inline-block";
                 signupBtn.style.display = "inline-block";
                 logoutBtn.style.display = "none";
@@ -326,7 +327,7 @@
             window.location.reload();
         };
 
-        // --- 3. LIVE FIRESTORE DATA & CHART FETCHING (LOCKED TO BOBBINGTON) ---
+        // --- 3. LIVE FIRESTORE DATA & CHART FETCHING (LOCKED TO BOBBINGTON / LEGACY) ---
         const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/fmct-58e22/databases/(default)/documents/fmct_items";
         let trendChart = null;
 
@@ -340,10 +341,11 @@
                 let totalItemsCount = 0;
 
                 if (data.documents) {
-                    // Strictly fetch items belonging to Bobbington's physical hardware device UID
+                    // Fetch items belonging to Bobbington's UID or legacy items without a userId field
                     const bobbingtonDocs = data.documents.filter(doc => {
                         let fields = doc.fields;
-                        return fields.userId && fields.userId.stringValue === BOBBINGTON_UID;
+                        let docUserId = fields.userId ? fields.userId.stringValue : null;
+                        return docUserId === BOBBINGTON_UID || !docUserId;
                     });
 
                     totalItemsCount = bobbingtonDocs.length;
@@ -374,7 +376,7 @@
                 const ctx = document.getElementById('dailyTrendChart').getContext('2d');
 
                 if (totalItemsCount === 0) {
-                    document.getElementById("chartStatus").innerText = "✨ No scans yet for Bobbington's device!";
+                    document.getElementById("chartStatus").innerText = "✨ No scans yet for this device!";
                 } else {
                     const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                     document.getElementById("chartStatus").innerText = `🟢 Live Sync Active (Last updated: ${timeNow})`;
@@ -390,7 +392,7 @@
                         data: {
                             labels: sortedDates,
                             datasets: [{
-                                label: "Bobbington's Daily Calories (kcal)",
+                                label: 'Daily Calories (kcal)',
                                 data: caloriesData,
                                 borderColor: '#ff7043',
                                 backgroundColor: 'rgba(255, 112, 67, 0.2)',
