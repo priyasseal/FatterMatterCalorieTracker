@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FMCT Project Wiki</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #fff3d6, #ffe0b3, #ffcc80);
+            color: #5a2e00;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: linear-gradient(to right, #ff9900, #ff7043);
+            padding: 30px;
+            color: white;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+        }
+
+        header p {
+            font-size: 16px;
+            margin: 5px 0 0 0;
+            opacity: 0.95;
+            font-weight: normal;
+        }
+
+        .wiki-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .wiki-section {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 20px;
+            border: 3px solid #ffcc33;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .wiki-section h2 {
+            color: #d35400;
+            margin-top: 0;
+            font-size: 22px;
+            border-bottom: 2px dashed #ffcc33;
+            padding-bottom: 10px;
+        }
+
+        .wiki-section p, .wiki-section li {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #5a2e00;
+        }
+
+        .wiki-section ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin: 10px 20px;
+            padding: 10px 20px;
+            background-color: #fff7e6;
+            color: #5a2e00;
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: bold;
+            border: 2px solid #ffcc33;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: #ffe0b3;
+        }
+
+        footer {
+            background-color: #ff9900;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            margin-top: 50px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        📚 Fatter Matter Calorie Tracker
+        <p>Project Documentation & Wiki</p>
+    </header>
+
+    <div style="max-width: 800px; margin: 20px auto 0 auto;">
+        <a href="index.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <div class="wiki-container">
+
+        <!-- 1. PROJECT PURPOSE -->
+        <div class="wiki-section">
+            <h2>🎯 Project Purpose</h2>
+            <p>The <b>Fatter Matter Calorie Tracker (FMCT)</b> is an innovative IoT health tracking system designed to bridge physical hardware telemetry with cloud analytics. By utilizing an embedded barcode scanner, users can seamlessly scan food items to log caloric intake, sodium levels, and added sugars instantly without needing a cumbersome smartphone app.</p>
+        </div>
+
+        <!-- 2. PARTS USED -->
+        <div class="wiki-section">
+            <h2>🛠️ Parts & Tech Stack Used</h2>
+            <ul>
+                <li><b>Raspberry Pi Pico W:</b> Microcontroller handling Wi-Fi connectivity and MicroPython code execution.</li>
+                <li><b>GM67 Barcode Scanner:</b> Hardware module used to read food and beverage packaging barcodes.</li>
+                <li><b>Google Cloud Firestore:</b> Cloud NoSQL database storing live RESTful records under `fmct_items`.</li>
+                <li><b>Firebase Authentication:</b> Secure user management supporting email/password login and account creation.</li>
+                <li><b>Chart.js & GitHub Pages:</b> Frontend web hosting and interactive data visualization for trend tracking.</li>
+            </ul>
+        </div>
+
+        <!-- 3. HOW IT HELPS PEOPLE -->
+        <div class="wiki-section">
+            <h2>💡 How It Helps People</h2>
+            <p>Traditional calorie tracking apps require tedious manual searching through massive food databases. FMCT automates this friction point:</p>
+            <ul>
+                <li>Reduces friction in logging daily meals using physical barcode scans.</li>
+                <li>Provides real-time visibility into cumulative dietary habits via auto-refreshing charts.</li>
+                <li>Empowers users to monitor nutritional intake trends over time effortlessly.</li>
+            </ul>
+        </div>
+
+        <!-- 4. USER INSTRUCTIONS -->
+        <div class="wiki-section">
+            <h2>📖 User Instructions</h2>
+            <ul>
+                <li><b>Step 1:</b> Create an account or log in through the burger authentication portal.</li>
+                <li><b>Step 2:</b> Use the Raspberry Pi Pico W scanner to scan a food or beverage barcode.</li>
+                <li><b>Step 3:</b> View the automatically updated daily nutrition trend graph and summary widgets live on your main dashboard!</li>
+            </ul>
+        </div>
+
+        <!-- 5. CHALLENGES FACED -->
+        <div class="wiki-section">
+            <h2>🔥 Challenges I Faced</h2>
+            <ul>
+                <li><b>MicroPython REST APIs:</b> Configuring `urequests` headers and payload formats to properly target Google Cloud Firestore REST endpoints over 2.4 GHz Wi-Fi.</li>
+                <li><b>Real-Time UI Synchronization:</b> Implementing clean asynchronous data fetching loops and dynamic chart updates without lagging the web browser.</li>
+                <li><b>Responsive Theming:</b> Balancing playful burger aesthetics with clean, professional dashboard layouts across mobile and desktop viewports.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        Fatter Matter Calorie Tracker &copy; 2026
+    </footer>
+
+</body>
+</html>
