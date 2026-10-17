@@ -244,8 +244,8 @@
 
         <!-- ⭐ EMBEDDED LIVE NUTRITION TREND CHART ⭐ -->
         <div class="chart-card">
-            <h2>📈 Daily Nutrition Trend</h2>
-            <p class="chart-status" id="chartStatus">🔄 Waiting for user login...</p>
+            <h2>📈 Bobbington's Daily Nutrition Trend</h2>
+            <p class="chart-status" id="chartStatus">🔄 Syncing with Bobbington's Scanner...</p>
             <canvas id="dailyTrendChart"></canvas>
         </div>
 
@@ -296,13 +296,13 @@
         const signupBtn = document.getElementById("signupBtn");
         const logoutBtn = document.getElementById("logoutBtn");
 
-        let currentUserUid = null;
+        // Hardcode Bobbington's UID as the target device owner
+        const BOBBINGTON_UID = "gZ4DxtuBwTbw08XGnCrs3Fx4uiB2";
 
         auth.onAuthStateChanged(async (user) => {
             const status = document.getElementById("status");
 
             if (user) {
-                currentUserUid = user.uid;
                 const doc = await db.collection("users").doc(user.uid).get();
                 let name = "Welcome back!";
                 if (doc.exists && doc.data().firstName) {
@@ -313,13 +313,10 @@
                 signupBtn.style.display = "none";
                 logoutBtn.style.display = "inline-block";
             } else {
-                currentUserUid = null;
-                status.innerHTML = "👋 Please log in to view your tracker.";
+                status.innerHTML = "👋 Welcome, Guest! Viewing Bobbington's Tracker.";
                 loginBtn.style.display = "inline-block";
                 signupBtn.style.display = "inline-block";
                 logoutBtn.style.display = "none";
-                
-                resetDashboardToBlank();
             }
             loadDashboardData();
         });
@@ -329,29 +326,11 @@
             window.location.reload();
         };
 
-        function resetDashboardToBlank() {
-            document.getElementById("statTotalCalories").innerText = "0 kcal";
-            document.getElementById("statTotalItems").innerText = "0";
-            document.getElementById("statDaysActive").innerText = "0 Days";
-            document.getElementById("chartStatus").innerText = "🔒 Log in to view live scanner data.";
-
-            if (trendChart) {
-                trendChart.data.labels = [];
-                trendChart.data.datasets[0].data = [];
-                trendChart.update();
-            }
-        }
-
-        // --- 3. LIVE FIRESTORE DATA & CHART FETCHING (FILTERED BY UID) ---
+        // --- 3. LIVE FIRESTORE DATA & CHART FETCHING (LOCKED TO BOBBINGTON) ---
         const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/fmct-58e22/databases/(default)/documents/fmct_items";
         let trendChart = null;
 
         async function loadDashboardData() {
-            if (!currentUserUid) {
-                resetDashboardToBlank();
-                return;
-            }
-
             try {
                 const response = await fetch(FIRESTORE_URL);
                 const data = await response.json();
@@ -361,15 +340,15 @@
                 let totalItemsCount = 0;
 
                 if (data.documents) {
-                    // Filter documents strictly belonging to the logged-in user's UID
-                    const userDocs = data.documents.filter(doc => {
+                    // Strictly fetch items belonging to Bobbington's physical hardware device UID
+                    const bobbingtonDocs = data.documents.filter(doc => {
                         let fields = doc.fields;
-                        return fields.userId && fields.userId.stringValue === currentUserUid;
+                        return fields.userId && fields.userId.stringValue === BOBBINGTON_UID;
                     });
 
-                    totalItemsCount = userDocs.length;
+                    totalItemsCount = bobbingtonDocs.length;
 
-                    userDocs.forEach(doc => {
+                    bobbingtonDocs.forEach(doc => {
                         let fields = doc.fields;
                         let dateStr = fields.date ? fields.date.stringValue : "Unknown Date";
                         let calStr = fields.calories ? fields.calories.stringValue : "0";
@@ -395,7 +374,7 @@
                 const ctx = document.getElementById('dailyTrendChart').getContext('2d');
 
                 if (totalItemsCount === 0) {
-                    document.getElementById("chartStatus").innerText = "✨ No scans yet! Start scanning items with your Pico W.";
+                    document.getElementById("chartStatus").innerText = "✨ No scans yet for Bobbington's device!";
                 } else {
                     const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                     document.getElementById("chartStatus").innerText = `🟢 Live Sync Active (Last updated: ${timeNow})`;
@@ -411,7 +390,7 @@
                         data: {
                             labels: sortedDates,
                             datasets: [{
-                                label: 'Daily Calories (kcal)',
+                                label: "Bobbington's Daily Calories (kcal)",
                                 data: caloriesData,
                                 borderColor: '#ff7043',
                                 backgroundColor: 'rgba(255, 112, 67, 0.2)',
@@ -446,10 +425,9 @@
             }
         }
 
-        // Poll every 10 seconds only if logged in
-        setInterval(() => {
-            if (currentUserUid) loadDashboardData();
-        }, 10000);
+        // Poll every 10 seconds
+        loadDashboardData();
+        setInterval(loadDashboardData, 10000);
     </script>
 </body>
 </html>
