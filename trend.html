@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FMCT - Calorie Trend Analysis</title>
+    <title>FMCT - Calorie & Nutrition Trend Analysis</title>
     <style>
         * {
             box-sizing: border-box;
@@ -84,9 +84,9 @@
             width: 90%;
         }
 
-        .chart-title {
+        .section-title {
             text-align: center;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #5a2e00;
             margin-bottom: 5px;
@@ -104,28 +104,51 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 15px;
             margin-bottom: 20px;
             font-size: 14px;
             font-weight: bold;
             color: #8d6e63;
         }
 
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .legend-box {
-            width: 18px;
+            width: 16px;
             height: 12px;
-            background: #ffb347;
+            background: #ffd580;
             border: 2px solid #e67e22;
             border-radius: 3px;
         }
 
-        .chart-container {
+        .legend-line {
+            width: 20px;
+            height: 4px;
+            background: #ff9900;
+            border-radius: 2px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .chart-box {
             position: relative;
             width: 100%;
             height: 400px;
+            background: #fffdfa;
+            border-radius: 16px;
+            border: 2px solid #ffe0b3;
+            padding: 15px;
         }
 
-        /* Tooltip positioned directly adjacent to cursor with minimal offset */
+        /* Tooltip positioned adjacent to cursor */
         #chartTooltip {
             position: absolute;
             display: none;
@@ -152,6 +175,38 @@
             fill: #d35400;
         }
 
+        .nutrition-summary-card {
+            background: #fffdf9;
+            border: 2px solid #ffe0b3;
+            border-radius: 16px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .nutri-stat {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #ffd580;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .nutri-stat h4 {
+            font-size: 13px;
+            color: #8d6e63;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .nutri-stat p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+
         footer {
             background: #3e2723;
             color: #ffcc80;
@@ -175,31 +230,67 @@
     </nav>
 
     <div class="dashboard-container">
-        <div class="chart-title">Calorie Trend Analysis (Firestore Live)</div>
+        <div class="section-title">Calorie Trend Analysis (Firestore Live)</div>
         <div class="refresh-status" id="refreshTimer">Telemetry Auto-Refresh in: 10s</div>
         
         <div class="chart-legend">
-            <div class="legend-box"></div> Calories (kcal)
+            <div class="legend-item"><div class="legend-box"></div> Bar Volume</div>
+            <div class="legend-item"><div class="legend-line"></div> Trend Line</div>
         </div>
 
-        <div class="chart-container">
-            <div id="chartTooltip"></div>
+        <div class="charts-grid">
+            <!-- 1. LINE-BAR COMBO CHART -->
+            <div class="chart-box">
+                <div id="chartTooltip"></div>
+                <svg id="trendSvg" viewBox="0 0 850 380" width="100%" height="100%" style="overflow: visible;">
+                    <line x1="60" y1="20" x2="820" y2="20" stroke="#f0f0f0" stroke-width="1" />
+                    <line x1="60" y1="85" x2="820" y2="85" stroke="#f0f0f0" stroke-width="1" />
+                    <line x1="60" y1="150" x2="820" y2="150" stroke="#f0f0f0" stroke-width="1" />
+                    <line x1="60" y1="215" x2="820" y2="215" stroke="#f0f0f0" stroke-width="1" />
+                    <line x1="60" y1="280" x2="820" y2="280" stroke="#d0d0d0" stroke-width="1" />
 
-            <svg id="trendSvg" viewBox="0 0 850 380" width="100%" height="100%" style="overflow: visible;">
-                <line x1="60" y1="20" x2="820" y2="20" stroke="#f0f0f0" stroke-width="1" />
-                <line x1="60" y1="85" x2="820" y2="85" stroke="#f0f0f0" stroke-width="1" />
-                <line x1="60" y1="150" x2="820" y2="150" stroke="#f0f0f0" stroke-width="1" />
-                <line x1="60" y1="215" x2="820" y2="215" stroke="#f0f0f0" stroke-width="1" />
-                <line x1="60" y1="280" x2="820" y2="280" stroke="#d0d0d0" stroke-width="1" />
+                    <text x="45" y="285" font-size="12" fill="#8d6e63" text-anchor="end">0</text>
+                    <text x="45" y="220" font-size="12" fill="#8d6e63" text-anchor="end">50</text>
+                    <text x="45" y="155" font-size="12" fill="#8d6e63" text-anchor="end">100</text>
+                    <text x="45" y="90" font-size="12" fill="#8d6e63" text-anchor="end">150</text>
+                    <text x="45" y="25" font-size="12" fill="#8d6e63" text-anchor="end">200</text>
 
-                <text x="45" y="285" font-size="12" fill="#8d6e63" text-anchor="end">0</text>
-                <text x="45" y="220" font-size="12" fill="#8d6e63" text-anchor="end">50</text>
-                <text x="45" y="155" font-size="12" fill="#8d6e63" text-anchor="end">100</text>
-                <text x="45" y="90" font-size="12" fill="#8d6e63" text-anchor="end">150</text>
-                <text x="45" y="25" font-size="12" fill="#8d6e63" text-anchor="end">200</text>
+                    <g id="chartContent"></g>
+                </svg>
+            </div>
 
-                <g id="chartContent"></g>
-            </svg>
+            <!-- 2. TOTAL NUTRITION PIE / PROPORTIONAL BREAKDOWN CHART -->
+            <div>
+                <div class="section-title" style="margin-bottom: 15px;">Total Cumulative Nutrition Breakdown</div>
+                <div class="chart-box" style="height: 320px; display: flex; align-items: center; justify-content: center;">
+                    <svg id="pieSvg" viewBox="0 0 400 300" width="100%" height="100%">
+                        <g id="pieContent"></g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 3. NUTRITIONAL TOTALS SUMMARY CARDS -->
+            <div>
+                <div class="section-title" style="margin-bottom: 15px;">Aggregated Tracking Stats</div>
+                <div class="nutrition-summary-card" id="nutritionSummary">
+                    <div class="nutri-stat">
+                        <h4>Total Calories</h4>
+                        <p id="sumCals">-- kcal</p>
+                    </div>
+                    <div class="nutri-stat">
+                        <h4>Total Chol</h4>
+                        <p id="sumChol">-- mg</p>
+                    </div>
+                    <div class="nutri-stat">
+                        <h4>Total Sugars</h4>
+                        <p id="sumSugar">-- g</p>
+                    </div>
+                    <div class="nutri-stat">
+                        <h4>Total Sodium</h4>
+                        <p id="sumSodium">-- mg</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -226,7 +317,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Session Persistence
         setPersistence(auth, browserLocalPersistence).catch(err => console.error(err));
 
         onAuthStateChanged(auth, (user) => {
@@ -238,10 +328,11 @@
             }
         });
 
+        // Redirect to index.html upon logout as requested
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
                 await signOut(auth);
-                window.location.href = "login.html";
+                window.location.href = "index.html";
             } catch (error) {
                 alert("Error logging out: " + error.message);
             }
@@ -251,26 +342,52 @@
             try {
                 const querySnapshot = await getDocs(collection(db, "fmct_items"));
                 let items = [];
+                let totalCals = 0;
+                let totalChol = 0;
+                let totalSugar = 0;
+                let totalSodium = 0;
+
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    const cals = parseFloat(data.calories) || 0;
+                    
+                    // Parse numeric values from strings like "370mg", "0g", "10mg"
+                    const chol = parseFloat(data.chol) || 0;
+                    const sugar = parseFloat(data.total_sugar || data.added_sugar) || 0;
+                    const sodium = parseFloat(data.sodium) || 0;
+
+                    totalCals += cals;
+                    totalChol += chol;
+                    totalSugar += sugar;
+                    totalSodium += sodium;
+
                     items.push({
                         id: doc.id,
                         item: data.item || "Unknown Item",
-                        calories: parseFloat(data.calories) || 0,
+                        calories: cals,
                         date: data.date || "2026-10-01",
                         sodium: data.sodium || "N/A",
-                        sugar: data.total_sugar || "N/A"
+                        chol: data.chol || "N/A",
+                        sugar: data.total_sugar || data.added_sugar || "N/A"
                     });
                 });
 
                 items.sort((a, b) => new Date(a.date) - new Date(b.date));
-                renderChart(items);
+
+                // Update Summary Cards
+                document.getElementById('sumCals').innerText = `${totalCals} kcal`;
+                document.getElementById('sumChol').innerText = `${totalChol} mg`;
+                document.getElementById('sumSugar').innerText = `${totalSugar} g`;
+                document.getElementById('sumSodium').innerText = `${totalSodium} mg`;
+
+                renderLineBarChart(items);
+                renderNutritionalPieChart(totalCals, totalChol, totalSugar, totalSodium);
             } catch (error) {
                 console.error("Error loading Firestore items:", error);
             }
         }
 
-        function renderChart(items) {
+        function renderLineBarChart(items) {
             const container = document.getElementById('chartContent');
             container.innerHTML = '';
 
@@ -284,33 +401,22 @@
             const stepX = items.length > 1 ? (endX - startX) / (items.length - 1) : 0;
             
             let pointsString = "";
-            let polygonPoints = "";
-            let firstX = startX;
-            let lastX = startX;
+            let barsHTML = "";
 
             items.forEach((item, index) => {
                 const x = startX + (index * stepX);
                 const y = 280 - Math.min((item.calories / 200) * 260, 260);
+                const barHeight = 280 - y;
 
-                if (index === 0) {
-                    firstX = x;
-                    polygonPoints += `${x},280 `;
-                }
+                // Render Bar (Line-Bar combo graph)
+                barsHTML += `
+                    <rect x="${x - 12}" y="${y}" width="24" height="${barHeight}" fill="#ffe5b4" stroke="#ffb347" stroke-width="2" rx="4" />
+                `;
+
                 pointsString += `${x},${y} `;
-                polygonPoints += `${x},${y} `;
-                lastX = x;
             });
 
-            polygonPoints += `${lastX},280`;
-
-            let svgHTML = `
-                <defs>
-                    <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#ffb347" stop-opacity="0.4" />
-                        <stop offset="100%" stop-color="#ffb347" stop-opacity="0.05" />
-                    </linearGradient>
-                </defs>
-                <polygon points="${polygonPoints}" fill="url(#orangeGradient)" />
+            let svgHTML = barsHTML + `
                 <polyline points="${pointsString}" fill="none" stroke="#ff9900" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
             `;
 
@@ -318,7 +424,6 @@
                 const x = startX + (index * stepX);
                 const y = 280 - Math.min((item.calories / 200) * 260, 260);
 
-                // Format clean date (YYYY-MM-DD -> MM/DD) to avoid overlapping text
                 let dateDisplay = item.date;
                 if (item.date && item.date.includes('-')) {
                     const parts = item.date.split('-');
@@ -333,6 +438,7 @@
                         data-food="${item.item}" 
                         data-cals="${item.calories} kcal" 
                         data-sodium="${item.sodium}"
+                        data-chol="${item.chol}"
                         data-sugar="${item.sugar}" />
                     <text x="${x}" y="305" font-size="11" fill="#5a2e00" text-anchor="end" transform="rotate(-45, ${x}, 305)" font-weight="bold">${dateDisplay}</text>
                 `;
@@ -340,6 +446,52 @@
 
             container.innerHTML = svgHTML;
             attachTooltipListeners();
+        }
+
+        function renderNutritionalPieChart(cals, chol, sugar, sodium) {
+            const container = document.getElementById('pieContent');
+            const total = cals + chol + sugar + sodium || 1;
+
+            const data = [
+                { label: 'Calories (kcal)', val: cals, color: '#ff9900' },
+                { label: 'Sodium (mg)', val: sodium, color: '#2ecc71' },
+                { label: 'Cholesterol (mg)', val: chol, color: '#3498db' },
+                { label: 'Sugars (g)', val: sugar, color: '#e74c3c' }
+            ];
+
+            let cumulativePercent = 0;
+            let svgHTML = '';
+            let legendHTML = '';
+
+            data.forEach((slice, idx) => {
+                const percent = slice.val / total;
+                const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
+                cumulativePercent += percent;
+                const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
+                const largeArcFlag = percent > 0.5 ? 1 : 0;
+
+                const pathData = [
+                    `M 200 150`,
+                    `L ${startX} ${startY}`,
+                    `A 100 100 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+                    `Z`
+                ].join(' ');
+
+                svgHTML += `<path d="${pathData}" fill="${slice.color}" stroke="white" stroke-width="2" />`;
+            });
+
+            // Center hole for Donut style
+            svgHTML += `<circle cx="200" cy="150" r="55" fill="white" />`;
+            svgHTML += `<text x="200" y="145" font-size="14" font-weight="bold" fill="#5a2e00" text-anchor="middle">Nutrition</text>`;
+            svgHTML += `<text x="200" y="165" font-size="11" fill="#8d6e63" text-anchor="middle">Proportions</text>`;
+
+            container.innerHTML = svgHTML;
+        }
+
+        function getCoordinatesForPercent(percent) {
+            const x = 200 + 100 * Math.cos(2 * Math.PI * percent - Math.PI / 2);
+            const y = 150 + 100 * Math.sin(2 * Math.PI * percent - Math.PI / 2);
+            return [x, y];
         }
 
         function attachTooltipListeners() {
@@ -352,9 +504,10 @@
                     const food = e.target.getAttribute('data-food');
                     const cals = e.target.getAttribute('data-cals');
                     const sodium = e.target.getAttribute('data-sodium');
+                    const chol = e.target.getAttribute('data-chol');
                     const sugar = e.target.getAttribute('data-sugar');
 
-                    tooltip.innerHTML = `<strong>📅 Date:</strong> ${date}<br><strong>🍔 Item:</strong> ${food}<br><strong>🔥 Calories:</strong> ${cals}<br><strong>🧂 Sodium:</strong> ${sodium}<br><strong>🍬 Sugar:</strong> ${sugar}`;
+                    tooltip.innerHTML = `<strong>📅 Date:</strong> ${date}<br><strong>🍔 Item:</strong> ${food}<br><strong>🔥 Calories:</strong> ${cals}<br><strong>🧂 Sodium:</strong> ${sodium}<br><strong>🧈 Chol:</strong> ${chol}<br><strong>🍬 Sugar:</strong> ${sugar}`;
                     tooltip.style.display = 'block';
                 });
 
