@@ -37,10 +37,26 @@
             color: #d35400;
         }
 
-        .user-panel {
+        .nav-controls {
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        .btn-dash {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-dash:hover {
+            background: #27ae60;
         }
 
         .btn-logout {
@@ -73,7 +89,15 @@
             font-size: 24px;
             font-weight: bold;
             color: #5a2e00;
-            margin-bottom: 25px;
+            margin-bottom: 5px;
+        }
+
+        .refresh-status {
+            text-align: center;
+            font-size: 12px;
+            color: #8d6e63;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .chart-legend {
@@ -95,26 +119,25 @@
             border-radius: 3px;
         }
 
-        /* SVG CHART CONTAINER */
         .chart-container {
             position: relative;
             width: 100%;
             height: 380px;
         }
 
-        /* CUSTOM HOVER TOOLTIP */
+        /* Tooltip positioned directly adjacent with minimal space */
         #chartTooltip {
             position: absolute;
             display: none;
             background: rgba(90, 46, 0, 0.95);
             color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
             pointer-events: none;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-            z-index: 10;
-            max-width: 250px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            z-index: 100;
+            max-width: 240px;
             line-height: 1.4;
             border: 2px solid #ffb347;
         }
@@ -143,101 +166,39 @@
 <body>
 
     <nav>
-        <div class="logo">🍔 FMCT Trend Dashboard</div>
-        <div class="user-panel">
+        <div class="logo">🍔 FMCT Trend Analysis</div>
+        <div class="nav-controls">
             <span id="userEmailDisplay" style="font-size: 14px; font-weight: bold; color: #5a2e00;">Loading...</span>
+            <a href="index.html" class="btn-dash">Main Dashboard</a>
             <button id="logoutBtn" class="btn-logout">Log Out</button>
         </div>
     </nav>
 
     <div class="dashboard-container">
-        <div class="chart-title">Calorie Trend Analysis</div>
+        <div class="chart-title">Calorie Trend Analysis (Firestore Live)</div>
+        <div class="refresh-status" id="refreshTimer">Telemetry Auto-Refresh in: 10s</div>
+        
         <div class="chart-legend">
             <div class="legend-box"></div> Calories (kcal)
         </div>
 
         <div class="chart-container">
-            <!-- TOOLTIP -->
             <div id="chartTooltip"></div>
 
-            <!-- SVG GRAPH MATCHING PROVIDED REFERENCE -->
-            <svg viewBox="0 0 850 350" width="100%" height="100%" style="overflow: visible;">
-                <!-- Grid Lines -->
+            <svg id="trendSvg" viewBox="0 0 850 350" width="100%" height="100%" style="overflow: visible;">
                 <line x1="50" y1="20" x2="820" y2="20" stroke="#f0f0f0" stroke-width="1" />
                 <line x1="50" y1="90" x2="820" y2="90" stroke="#f0f0f0" stroke-width="1" />
                 <line x1="50" y1="160" x2="820" y2="160" stroke="#f0f0f0" stroke-width="1" />
                 <line x1="50" y1="230" x2="820" y2="230" stroke="#f0f0f0" stroke-width="1" />
                 <line x1="50" y1="300" x2="820" y2="300" stroke="#d0d0d0" stroke-width="1" />
 
-                <!-- Y-Axis Labels -->
                 <text x="30" y="305" font-size="12" fill="#8d6e63" text-anchor="end">0</text>
-                <text x="30" y="235" font-size="12" fill="#8d6e63" text-anchor="end">40</text>
-                <text x="30" y="165" font-size="12" fill="#8d6e63" text-anchor="end">80</text>
-                <text x="30" y="95" font-size="12" fill="#8d6e63" text-anchor="end">120</text>
-                <text x="30" y="25" font-size="12" fill="#8d6e63" text-anchor="end">160</text>
+                <text x="30" y="235" font-size="12" fill="#8d6e63" text-anchor="end">50</text>
+                <text x="30" y="165" font-size="12" fill="#8d6e63" text-anchor="end">100</text>
+                <text x="30" y="95" font-size="12" fill="#8d6e63" text-anchor="end">150</text>
+                <text x="30" y="25" font-size="12" fill="#8d6e63" text-anchor="end">200</text>
 
-                <!-- Gradient Fill Area -->
-                <defs>
-                    <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#ffb347" stop-opacity="0.4" />
-                        <stop offset="100%" stop-color="#ffb347" stop-opacity="0.05" />
-                    </linearGradient>
-                </defs>
-                <polygon points="100,58 240,43 380,63 520,270 660,285 800,300 800,300 100,300" fill="url(#orangeGradient)" />
-
-                <!-- Trend Line -->
-                <polyline points="100,58 240,43 380,63 520,270 660,285 800,300" fill="none" stroke="#ff9900" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-
-                <!-- Data Points (Circles) with Tooltip triggers -->
-                <!-- Point 1: 2026-10-01 -->
-                <circle class="data-point" cx="100" cy="58" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
-                    data-date="2026-10-01" 
-                    data-food="Blue Monster Energy & Granola Bar" 
-                    data-cals="150 kcal" 
-                    data-notes="Morning telemetry sync via Pico W scanner." />
-
-                <!-- Point 2: 2026-10-03 -->
-                <circle class="data-point" cx="240" cy="43" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
-                    data-date="2026-10-03" 
-                    data-food="Lays Lightly Salted Chips" 
-                    data-cals="160 kcal" 
-                    data-notes="Pre-scan mindfulness pause applied successfully." />
-
-                <!-- Point 3: 2026-10-05 -->
-                <circle class="data-point" cx="380" cy="63" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
-                    data-date="2026-10-05" 
-                    data-food="Quaker Oats Bowl" 
-                    data-cals="148 kcal" 
-                    data-notes="Wholesome breakfast selection logged to Firestore." />
-
-                <!-- Point 4: 2026-10-12 -->
-                <circle class="data-point" cx="520" cy="270" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
-                    data-date="2026-10-12" 
-                    data-food="Organic Lettuce & Cucumber Salad" 
-                    data-cals="16 kcal" 
-                    data-notes="Light lunch choice with light dressing." />
-
-                <!-- Point 5: 2026-10-20 -->
-                <circle class="data-point" cx="660" cy="285" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
-                    data-date="2026-10-20" 
-                    data-food="Pepsi Zero Sugar" 
-                    data-cals="5 kcal" 
-                    data-notes="Beverage telemetry scanned at 2:15 PM." />
-
-                <!-- Point 6: 2026-11-02 (Dataset End) -->
-                <circle class="data-point" cx="800" cy="300" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
-                    data-date="2026-11-02" 
-                    data-food="Filtered Water & Zero Snack" 
-                    data-cals="0 kcal" 
-                    data-notes="Target baseline achieved leading up to Nov 2, 2026." />
-
-                <!-- X-Axis Date Labels -->
-                <text x="100" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-01</text>
-                <text x="240" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-03</text>
-                <text x="380" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-05</text>
-                <text x="520" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-12</text>
-                <text x="660" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-20</text>
-                <text x="800" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-11-02</text>
+                <g id="chartContent"></g>
             </svg>
         </div>
     </div>
@@ -246,10 +207,10 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE & INTERACTIVE TOOLTIP SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
@@ -263,12 +224,14 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         onAuthStateChanged(auth, (user) => {
             if (!user) {
                 window.location.href = "login.html";
             } else {
                 document.getElementById('userEmailDisplay').innerText = user.email;
+                loadFirestoreData();
             }
         });
 
@@ -281,30 +244,131 @@
             }
         });
 
-        // Tooltip Interaction Logic
-        const tooltip = document.getElementById('chartTooltip');
-        const points = document.querySelectorAll('.data-point');
+        async function loadFirestoreData() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "fmct_items"));
+                let items = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    items.push({
+                        id: doc.id,
+                        item: data.item || "Unknown Item",
+                        calories: parseFloat(data.calories) || 0,
+                        date: data.date || "2026-10-01",
+                        sodium: data.sodium || "N/A",
+                        sugar: data.total_sugar || "N/A"
+                    });
+                });
 
-        points.forEach(point => {
-            point.addEventListener('mouseenter', (e) => {
-                const date = e.target.getAttribute('data-date');
-                const food = e.target.getAttribute('data-food');
-                const cals = e.target.getAttribute('data-cals');
-                const notes = e.target.getAttribute('data-notes');
+                items.sort((a, b) => new Date(a.date) - new Date(b.date));
+                renderChart(items);
+            } catch (error) {
+                console.error("Error loading Firestore items:", error);
+            }
+        }
 
-                tooltip.innerHTML = `<strong>📅 Date:</strong> ${date}<br><strong>🍔 Consumed:</strong> ${food}<br><strong>🔥 Energy:</strong> ${cals}<br><em>${notes}</em>`;
-                tooltip.style.display = 'block';
+        function renderChart(items) {
+            const container = document.getElementById('chartContent');
+            container.innerHTML = '';
+
+            if (items.length === 0) {
+                container.innerHTML = '<text x="425" y="180" font-size="16" fill="#8d6e63" text-anchor="middle">No items found in fmct_items collection.</text>';
+                return;
+            }
+
+            const startX = 100;
+            const endX = 800;
+            const stepX = items.length > 1 ? (endX - startX) / (items.length - 1) : 0;
+            
+            let pointsString = "";
+            let polygonPoints = "";
+            let firstX = startX;
+            let lastX = startX;
+
+            items.forEach((item, index) => {
+                const x = startX + (index * stepX);
+                const y = 300 - Math.min((item.calories / 200) * 280, 280);
+
+                if (index === 0) {
+                    firstX = x;
+                    polygonPoints += `${x},300 `;
+                }
+                pointsString += `${x},${y} `;
+                polygonPoints += `${x},${y} `;
+                lastX = x;
             });
 
-            point.addEventListener('mousemove', (e) => {
-                tooltip.style.left = (e.pageX + 15) + 'px';
-                tooltip.style.top = (e.pageY - 40) + 'px';
+            polygonPoints += `${lastX},300`;
+
+            let svgHTML = `
+                <defs>
+                    <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffb347" stop-opacity="0.4" />
+                        <stop offset="100%" stop-color="#ffb347" stop-opacity="0.05" />
+                    </linearGradient>
+                </defs>
+                <polygon points="${polygonPoints}" fill="url(#orangeGradient)" />
+                <polyline points="${pointsString}" fill="none" stroke="#ff9900" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            `;
+
+            items.forEach((item, index) => {
+                const x = startX + (index * stepX);
+                const y = 300 - Math.min((item.calories / 200) * 280, 280);
+
+                svgHTML += `
+                    <circle class="data-point" cx="${x}" cy="${y}" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
+                        data-date="${item.date}" 
+                        data-food="${item.item}" 
+                        data-cals="${item.calories} kcal" 
+                        data-sodium="${item.sodium}"
+                        data-sugar="${item.sugar}" />
+                    <text x="${x}" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">${item.date}</text>
+                `;
             });
 
-            point.addEventListener('mouseleave', () => {
-                tooltip.style.display = 'none';
+            container.innerHTML = svgHTML;
+            attachTooltipListeners();
+        }
+
+        // Tooltip listeners positioned adjacent to the cursor/dot with minimal space
+        function attachTooltipListeners() {
+            const tooltip = document.getElementById('chartTooltip');
+            const points = document.querySelectorAll('.data-point');
+
+            points.forEach(point => {
+                point.addEventListener('mouseenter', (e) => {
+                    const date = e.target.getAttribute('data-date');
+                    const food = e.target.getAttribute('data-food');
+                    const cals = e.target.getAttribute('data-cals');
+                    const sodium = e.target.getAttribute('data-sodium');
+                    const sugar = e.target.getAttribute('data-sugar');
+
+                    tooltip.innerHTML = `<strong>📅 Date:</strong> ${date}<br><strong>🍔 Item:</strong> ${food}<br><strong>🔥 Calories:</strong> ${cals}<br><strong>🧂 Sodium:</strong> ${sodium}<br><strong>🍬 Sugar:</strong> ${sugar}`;
+                    tooltip.style.display = 'block';
+                });
+
+                point.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = (e.pageX + 12) + 'px';
+                    tooltip.style.top = (e.pageY - 25) + 'px';
+                });
+
+                point.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
             });
-        });
+        }
+
+        let timeLeft = 10;
+        const timerEl = document.getElementById('refreshTimer');
+        
+        setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                window.location.reload();
+            } else {
+                timerEl.innerText = `Telemetry Auto-Refresh in: ${timeLeft}s`;
+            }
+        }, 1000);
     </script>
 </body>
 </html>
