@@ -59,6 +59,22 @@
             background: #27ae60;
         }
 
+        .btn-refresh {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: #d68910;
+        }
+
         .btn-logout {
             background: #ff7043;
             color: white;
@@ -100,22 +116,18 @@
             font-weight: bold;
             color: #34495e;
             margin-bottom: 20px;
-        }
-
-        .refresh-status {
-            font-size: 11px;
-            color: #95a5a6;
-            font-weight: bold;
-            float: right;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .chart-box {
             position: relative;
             width: 100%;
-            height: 300px;
+            height: 320px;
         }
 
-        /* Tooltip */
+        /* Tooltip style */
         #chartTooltip {
             position: absolute;
             display: none;
@@ -131,7 +143,7 @@
             line-height: 1.4;
         }
 
-        /* DATA TABLE STYLE (Inspired by reference screenshot) */
+        /* DATA TABLE STYLE */
         .table-card {
             background: #ffffff;
             border-radius: 16px;
@@ -167,16 +179,6 @@
             background: #fafbfc;
         }
 
-        .badge-category {
-            background: #e8f8f5;
-            color: #1abc9c;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
         footer {
             background: #3e2723;
             color: #ffcc80;
@@ -202,11 +204,11 @@
     <div class="main-container">
         <!-- TOP TWO CHARTS ROW -->
         <div class="charts-row">
-            <!-- 1. PROFESSIONAL PIE / DONUT CHART WITH MARKERS & CALLOUTS -->
+            <!-- 1. PROFESSIONAL PIE / DONUT CHART -->
             <div class="card">
                 <div class="card-title">
                     Nutritional Distribution
-                    <span class="refresh-status" id="refreshTimer">Auto-Refresh: 10s</span>
+                    <button class="btn-refresh" id="refreshBtn">🔄 Refresh Data</button>
                 </div>
                 <div class="chart-box">
                     <div id="chartTooltip"></div>
@@ -216,7 +218,7 @@
                 </div>
             </div>
 
-            <!-- 2. PROFESSIONAL LINE-BAR TREND ANALYSIS -->
+            <!-- 2. VARIABLE COLOR BAR & GREEN LINE TREND ANALYSIS -->
             <div class="card">
                 <div class="card-title">Average Calorie Trend Analysis</div>
                 <div class="chart-box">
@@ -242,14 +244,13 @@
             </div>
         </div>
 
-        <!-- BOTTOM DATA TABLE ROW -->
+        <!-- BOTTOM DATA TABLE ROW (Category Status removed) -->
         <div class="table-card">
-            <div class="card-title">Scanned Items Telemetry Log (`fmct_items`)</div>
+            <div class="card-title">Scanned Items Telemetry Log</div>
             <table>
                 <thead>
                     <tr>
                         <th>Item Name</th>
-                        <th>Category Status</th>
                         <th>Date Scanned</th>
                         <th>Calories</th>
                         <th>Sodium</th>
@@ -259,7 +260,7 @@
                 </thead>
                 <tbody id="telemetryTableBody">
                     <tr>
-                        <td colspan="7" style="text-align: center; color: #95a5a6;">Loading telemetry data from Firestore...</td>
+                        <td colspan="6" style="text-align: center; color: #95a5a6;">Loading telemetry data from Firestore...</td>
                     </tr>
                 </tbody>
             </table>
@@ -300,7 +301,6 @@
             }
         });
 
-        // Logout correctly redirects to index.html (public landing page)
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
                 await signOut(auth);
@@ -308,6 +308,10 @@
             } catch (error) {
                 alert("Error logging out: " + error.message);
             }
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            loadFirestoreData();
         });
 
         async function loadFirestoreData() {
@@ -365,7 +369,7 @@
 
             let cumulativePercent = 0;
             let svgHTML = '';
-            const centerX = 200;
+            const centerX = 160;
             const centerY = 150;
             const radius = 80;
 
@@ -386,20 +390,18 @@
                 const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
                 svgHTML += `<path d="${pathData}" fill="${slice.color}" stroke="#ffffff" stroke-width="2" />`;
 
-                // Legend markers on the side
-                const legendY = 60 + (idx * 40);
+                const legendY = 70 + (idx * 38);
                 const pctFormatted = (percent * 100).toFixed(1) + '%';
                 svgHTML += `
-                    <rect x="310" y="${legendY - 10}" width="12" height="12" fill="${slice.color}" rx="3" />
-                    <text x="330" y="${legendY}" font-size="12" font-weight="bold" fill="#2c3e50">${slice.label}</text>
-                    <text x="330" y="${legendY + 14}" font-size="11" fill="#7f8c8d">${slice.val} ${slice.unit} (${pctFormatted})</text>
+                    <rect x="270" y="${legendY - 10}" width="12" height="12" fill="${slice.color}" rx="3" />
+                    <text x="290" y="${legendY}" font-size="11" font-weight="bold" fill="#2c3e50">${slice.label}</text>
+                    <text x="290" y="${legendY + 13}" font-size="10" fill="#7f8c8d">${slice.val} ${slice.unit} (${pctFormatted})</text>
                 `;
             });
 
-            // Center Hole (Donut style with primary metric)
-            svgHTML += `<circle cx="${centerX}" cy="${centerY}" r="45" fill="#ffffff" />`;
-            svgHTML += `<text x="${centerX}" y="${centerY - 4}" font-size="13" font-weight="bold" fill="#2c3e50" text-anchor="middle">Total Mix</text>`;
-            svgHTML += `<text x="${centerX}" y="${centerY + 14}" font-size="11" fill="#e67e22" text-anchor="middle">${total.toFixed(0)} units</text>`;
+            svgHTML += `<circle cx="${centerX}" cy="${centerY}" r="40" fill="#ffffff" />`;
+            svgHTML += `<text x="${centerX}" y="${centerY - 4}" font-size="12" font-weight="bold" fill="#2c3e50" text-anchor="middle">Total Mix</text>`;
+            svgHTML += `<text x="${centerX}" y="${centerY + 14}" font-size="10" fill="#e67e22" text-anchor="middle">${total.toFixed(0)} units</text>`;
 
             container.innerHTML = svgHTML;
         }
@@ -410,10 +412,11 @@
 
             if (items.length === 0) return;
 
-            const startX = 60;
-            const endX = 410;
+            const startX = 50;
+            const endX = 420;
             const stepX = items.length > 1 ? (endX - startX) / (items.length - 1) : 0;
 
+            const barColors = ['#ff9f43', '#2ed573', '#3742fa', '#ff4757', '#9b59b6', '#1abc9c', '#e67e22'];
             let barsHTML = "";
             let pointsString = "";
 
@@ -421,29 +424,39 @@
                 const x = startX + (index * stepX);
                 const y = 280 - Math.min((item.calories / 200) * 260, 260);
                 const barHeight = 280 - y;
+                const color = barColors[index % barColors.length];
 
-                barsHTML += `<rect x="${x - 10}" y="${y}" width="20" height="${barHeight}" fill="#ffeaa7" stroke="#fdcb6e" stroke-width="1.5" rx="3" />`;
+                barsHTML += `<rect x="${x - 8}" y="${y}" width="16" height="${barHeight}" fill="${color}" opacity="0.85" rx="3" />`;
                 pointsString += `${x},${y} `;
             });
 
+            // Trend line in sleek green (#2ecc71)
             container.innerHTML = barsHTML + `
-                <polyline points="${pointsString}" fill="none" stroke="#e67e22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="${pointsString}" fill="none" stroke="#2ecc71" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
             `;
+
+            // Skip rendering every single date label if there are too many items to avoid overlapping
+            const skipFactor = items.length > 8 ? Math.ceil(items.length / 8) : 1;
 
             items.forEach((item, index) => {
                 const x = startX + (index * stepX);
                 const y = 280 - Math.min((item.calories / 200) * 260, 260);
 
-                let dateDisplay = item.date;
-                if (item.date && item.date.includes('-')) {
-                    const parts = item.date.split('-');
-                    if (parts.length === 3) dateDisplay = `${parts[1]}/${parts[2]}`;
-                }
-
                 container.innerHTML += `
-                    <circle cx="${x}" cy="${y}" r="5" fill="#ffffff" stroke="#e67e22" stroke-width="2" />
-                    <text x="${x}" y="300" font-size="10" fill="#7f8c8d" text-anchor="end" transform="rotate(-30, ${x}, 300)" font-weight="bold">${dateDisplay}</text>
+                    <circle cx="${x}" cy="${y}" r="4.5" fill="#ffffff" stroke="#2ecc71" stroke-width="2" />
                 `;
+
+                if (index % skipFactor === 0 || index === items.length - 1) {
+                    let dateDisplay = item.date;
+                    if (item.date && item.date.includes('-')) {
+                        const parts = item.date.split('-');
+                        if (parts.length === 3) dateDisplay = `${parts[1]}/${parts[2]}`;
+                    }
+
+                    container.innerHTML += `
+                        <text x="${x}" y="300" font-size="10" fill="#7f8c8d" text-anchor="end" transform="rotate(-30, ${x}, 300)" font-weight="bold">${dateDisplay}</text>
+                    `;
+                }
             });
         }
 
@@ -455,7 +468,6 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-weight: bold; color: #2c3e50;">${item.item}</td>
-                    <td><span class="badge-category">Synced Item</span></td>
                     <td style="color: #7f8c8d;">${item.date}</td>
                     <td style="font-weight: bold; color: #e67e22;">${item.calories} kcal</td>
                     <td>${item.sodium}</td>
@@ -465,17 +477,6 @@
                 tbody.appendChild(tr);
             });
         }
-
-        let timeLeft = 10;
-        const timerEl = document.getElementById('refreshTimer');
-        setInterval(() => {
-            timeLeft--;
-            if (timeLeft <= 0) {
-                window.location.reload();
-            } else {
-                timerEl.innerText = `Auto-Refresh: ${timeLeft}s`;
-            }
-        }, 1000);
     </script>
 </body>
 </html>
