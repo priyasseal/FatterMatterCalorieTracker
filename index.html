@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FMCT - Main Dashboard</title>
+    <title>FMCT - Fatter Matter Calorie Tracker</title>
     <style>
         * {
             box-sizing: border-box;
@@ -35,6 +35,9 @@
             font-size: 24px;
             font-weight: bold;
             color: #d35400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .nav-controls {
@@ -71,6 +74,157 @@
 
         .btn-logout:hover {
             background: #d35400;
+        }
+
+        /* SPLIT-SCREEN LANDING / LOGIN STYLES (Shown when logged out) */
+        #loggedOutView {
+            display: flex;
+            flex: 1;
+            width: 100vw;
+            height: calc(100vh - 140px);
+        }
+
+        .hero-left {
+            width: 55%;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .hero-left h1 {
+            font-size: 38px;
+            color: #5a2e00;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .desc-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 20px;
+            border: 3px solid #ffd580;
+            box-shadow: 0 8px 20px rgba(230, 126, 34, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .mini-food-art {
+            font-size: 45px;
+            animation: bounceArt 1.8s infinite ease-in-out;
+        }
+
+        @keyframes bounceArt {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .desc-box p {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #6e472e;
+        }
+
+        .about-snippet {
+            background: #2ecc71;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .login-right {
+            width: 45%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-shadow: -5px 0 25px rgba(230,126,34,0.05);
+            border-left: 3px solid #ffd580;
+        }
+
+        .login-box {
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-size: 26px;
+            font-weight: bold;
+            color: #5a2e00;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 15px;
+            border: 2px solid #ffd580;
+            border-radius: 15px;
+            outline: none;
+            color: #5a2e00;
+            background-color: #fffdf9;
+        }
+
+        .input-field:focus {
+            border-color: #ff9900;
+        }
+
+        .btn-letsgo {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(to bottom, #ff9900, #e67e22);
+            border: 2px solid #d35400;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(230,126,34,0.3);
+            margin-top: 10px;
+        }
+
+        .btn-letsgo:hover {
+            background: linear-gradient(to bottom, #ff8800, #d35400);
+        }
+
+        #errorMsg {
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #d32f2f;
+            min-height: 18px;
+        }
+
+        .signup-link-text {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #8d6e63;
+        }
+
+        .signup-link-text a {
+            color: #27ae60;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        /* DASHBOARD VIEW STYLES (Shown when logged in) */
+        #loggedInView {
+            display: none;
+            flex: 1;
+            width: 100%;
         }
 
         .dashboard-container {
@@ -144,40 +298,77 @@
 <body>
 
     <nav>
-        <div class="logo">🍔 FMCT Main Dashboard</div>
-        <div class="nav-controls">
-            <span id="userEmailDisplay" style="font-size: 14px; font-weight: bold; color: #5a2e00;">Loading session...</span>
-            <a href="trend.html" class="btn-trend">View Trend Analysis</a>
-            <button id="logoutBtn" class="btn-logout">Log Out</button>
+        <div class="logo">🍔 FMCT System</div>
+        <div class="nav-controls" id="navControls">
+            <!-- Dynamically toggled based on auth state -->
+            <span id="userEmailDisplay" style="font-size: 14px; font-weight: bold; color: #5a2e00;">Checking session...</span>
         </div>
     </nav>
 
-    <div class="dashboard-container">
-        <div class="dashboard-header-card">
-            <div>
-                <h2 style="color: #5a2e00; margin-bottom: 5px;">Welcome to your FMCT Command Hub</h2>
-                <p style="color: #8d6e63; font-size: 14px;">Your session is fully authenticated and synchronized with Google Cloud Firestore.</p>
+    <!-- LOGGED OUT: SPLIT SCREEN LANDING & LOGIN -->
+    <div id="loggedOutView">
+        <div class="hero-left">
+            <h1>The Cognitive App Behind Every Bite.</h1>
+            <div class="desc-box">
+                <div class="mini-food-art">🥗</div>
+                <p>
+                    Fatter Matter Calorie Tracker (FMCT) provides a faster, smarter, and significantly more efficient way to log and track nutrition using Raspberry Pi Pico hardware and cloud telemetry.
+                </p>
             </div>
-            <div class="stat-badge" id="widgetTime">Live Sync: Active</div>
+            <div class="about-snippet">
+                Created by Priyadarshini Seal, a 13-year-old inventor from Robinson Middle School in Plano, TX.
+            </div>
         </div>
 
-        <div class="metrics-grid">
-            <div class="card">
-                <h3>Hardware & Cloud Telemetry</h3>
-                <p>Monitors real-time data synchronization between the Raspberry Pi Pico 2 W microcontroller, optical barcode scanner, and Google Cloud Firestore pipelines.</p>
-                <div class="stat-badge">Pico W Connected</div>
+        <div class="login-right">
+            <div class="login-box">
+                <h2>Welcome Back</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <input type="email" id="email" class="input-field" placeholder="Email address" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password" class="input-field" placeholder="Password" required>
+                    </div>
+                    <button type="submit" id="submitBtn" class="btn-letsgo">Let's go!</button>
+                    <div id="errorMsg"></div>
+                </form>
+                <div class="signup-link-text">
+                    Don't have an account? <a href="signup.html">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGGED IN: MAIN DASHBOARD COMMAND HUB -->
+    <div id="loggedInView">
+        <div class="dashboard-container">
+            <div class="dashboard-header-card">
+                <div>
+                    <h2 style="color: #5a2e00; margin-bottom: 5px;">Welcome to your FMCT Command Hub</h2>
+                    <p style="color: #8d6e63; font-size: 14px;">Your session is fully authenticated and synchronized with Google Cloud Firestore.</p>
+                </div>
+                <div class="stat-badge" id="widgetTime">Live Sync: Active</div>
             </div>
 
-            <div class="card">
-                <h3>Cognitive Bump Mindfulness</h3>
-                <p>Tracks pre-scan mindfulness prompt delays and pause intervals designed to foster conscious consumer decision-making before item logging.</p>
-                <div class="stat-badge" style="background: #e8f8f5; color: #27ae60;">Status: Active</div>
-            </div>
+            <div class="metrics-grid">
+                <div class="card">
+                    <h3>Hardware & Cloud Telemetry</h3>
+                    <p>Monitors real-time data synchronization between the Raspberry Pi Pico 2 W microcontroller, optical barcode scanner, and Google Cloud Firestore pipelines.</p>
+                    <div class="stat-badge">Pico W Connected</div>
+                </div>
 
-            <div class="card">
-                <h3>Synchronized Product Dataset</h3>
-                <p>Manages live product records spanning your scanned items stored in the <code>fmct_items</code> collection leading up to November 2, 2026.</p>
-                <div class="stat-badge">Live DB Sync</div>
+                <div class="card">
+                    <h3>Cognitive Bump Mindfulness</h3>
+                    <p>Tracks pre-scan mindfulness prompt delays and pause intervals designed to foster conscious consumer decision-making before item logging.</p>
+                    <div class="stat-badge" style="background: #e8f8f5; color: #27ae60;">Status: Active</div>
+                </div>
+
+                <div class="card">
+                    <h3>Synchronized Product Dataset</h3>
+                    <p>Manages live product records spanning your scanned items stored in the <code>fmct_items</code> collection leading up to November 2, 2026.</p>
+                    <div class="stat-badge">Live DB Sync</div>
+                </div>
             </div>
         </div>
     </div>
@@ -186,10 +377,10 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH PERSISTENCE -->
+    <!-- FIREBASE MODULE SCRIPTS WITH PERSISTENCE & INLINE LOGIN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
@@ -220,31 +411,60 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Robust Auth Guard with Grace Period
-        let authChecked = false;
+        // Handle Inline Login Form Submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const submitBtn = document.getElementById('submitBtn');
 
-        onAuthStateChanged(auth, (user) => {
-            authChecked = true;
-            if (!user) {
-                window.location.href = "login.html";
-            } else {
-                document.getElementById('userEmailDisplay').innerText = user.email;
+            errorMsg.style.color = "#5a2e00";
+            errorMsg.innerText = "Authenticating...";
+            submitBtn.disabled = true;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Auth state listener will automatically switch UI to logged-in dashboard view
+            } catch (error) {
+                errorMsg.style.color = "#d32f2f";
+                errorMsg.innerText = error.message;
+                submitBtn.disabled = false;
             }
         });
 
-        setTimeout(() => {
-            if (!authChecked && !auth.currentUser) {
-                window.location.href = "login.html";
-            }
-        }, 1500);
+        // Auth State Listener to toggle between Split-Screen Login and Main Dashboard
+        onAuthStateChanged(auth, (user) => {
+            const loggedOutView = document.getElementById('loggedOutView');
+            const loggedInView = document.getElementById('loggedInView');
+            const navControls = document.getElementById('navControls');
 
-        // Logout Event Listener
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-                window.location.href = "login.html";
-            } catch (error) {
-                alert("Error logging out: " + error.message);
+            if (user) {
+                // User is signed in: show dashboard and nav controls
+                loggedOutView.style.display = 'none';
+                loggedInView.style.display = 'block';
+                navControls.innerHTML = `
+                    <span style="font-size: 14px; font-weight: bold; color: #5a2e00;">${user.email}</span>
+                    <a href="trend.html" class="btn-trend">View Trend Analysis</a>
+                    <button id="logoutBtn" class="btn-logout">Log Out</button>
+                `;
+
+                // Re-bind logout listener
+                document.getElementById('logoutBtn').addEventListener('click', async () => {
+                    try {
+                        await signOut(auth);
+                        // UI will automatically toggle back to loggedOutView via onAuthStateChanged
+                    } catch (error) {
+                        alert("Error logging out: " + error.message);
+                    }
+                });
+            } else {
+                // User is signed out: show split-screen login view
+                loggedOutView.style.display = 'flex';
+                loggedInView.style.display = 'none';
+                navControls.innerHTML = `
+                    <span style="font-size: 14px; font-weight: bold; color: #8d6e63;">Please Log In or Sign Up</span>
+                `;
             }
         });
     </script>
