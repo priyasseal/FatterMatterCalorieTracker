@@ -123,7 +123,7 @@
 
         .lower-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.1fr 0.9fr;
             gap: 25px;
             margin-bottom: 25px;
         }
@@ -131,7 +131,7 @@
         .pie-chart-box {
             position: relative;
             width: 100%;
-            height: 280px;
+            height: 310px;
         }
 
         .stats-box {
@@ -145,7 +145,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 18px;
+            padding: 14px 18px;
             background: #f8f9fa;
             border-radius: 10px;
             border: 1px solid #eef2f5;
@@ -252,6 +252,7 @@
     </nav>
 
     <div class="main-container">
+        <!-- 1. FULL-WIDTH TREND GRAPH -->
         <div class="card">
             <div class="card-title">
                 Average Calorie Trend Analysis
@@ -279,11 +280,12 @@
             </div>
         </div>
 
+        <!-- 2. LOWER ROW: ENLARGED PIE CHART & AGGREGATE STATS -->
         <div class="lower-row">
             <div class="card" style="margin-bottom: 0;">
                 <div class="card-title">Nutritional Distribution Mix</div>
                 <div class="pie-chart-box">
-                    <svg viewBox="0 0 450 260" width="100%" height="100%">
+                    <svg viewBox="0 0 500 300" width="100%" height="100%">
                         <g id="pieContent"></g>
                     </svg>
                 </div>
@@ -312,6 +314,7 @@
             </div>
         </div>
 
+        <!-- 3. SCANNED ITEMS TELEMETRY LOG TABLE -->
         <div class="table-card">
             <div class="card-title">Scanned Items Telemetry Log</div>
             <table>
@@ -357,22 +360,16 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Ensure persistence is active
         setPersistence(auth, browserLocalPersistence).catch(err => console.error(err));
 
-        // Robust Auth Guard with Grace Period to prevent race-condition redirect loops
-        let authVerified = false;
-
         onAuthStateChanged(auth, (user) => {
-            authVerified = true;
             if (user) {
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 loadFirestoreData();
             } else {
-                // Only redirect if Firebase has fully finished checking and user is genuinely null
                 setTimeout(() => {
                     if (!auth.currentUser) {
-                        window.location.href = "login.html";
+                        window.location.href = "index.html";
                     }
                 }, 400);
             }
@@ -438,6 +435,7 @@
             }
         }
 
+        // ENLARGED PROFESSIONAL PIE / DONUT CHART
         function renderProfessionalPieChart(cals, chol, sugar, sodium) {
             const container = document.getElementById('pieContent');
             const total = cals + chol + sugar + sodium || 1;
@@ -451,9 +449,9 @@
 
             let cumulativePercent = 0;
             let svgHTML = '';
-            const centerX = 140;
-            const centerY = 130;
-            const radius = 75;
+            const centerX = 160;
+            const centerY = 150;
+            const radius = 95; // Increased radius for a much bigger, prominent chart
 
             slices.forEach((slice, idx) => {
                 const percent = slice.val / total;
@@ -470,20 +468,20 @@
                 const largeArcFlag = percent > 0.5 ? 1 : 0;
 
                 const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-                svgHTML += `<path d="${pathData}" fill="${slice.color}" stroke="#ffffff" stroke-width="2" />`;
+                svgHTML += `<path d="${pathData}" fill="${slice.color}" stroke="#ffffff" stroke-width="2.5" />`;
 
-                const legendY = 60 + (idx * 38);
+                const legendY = 65 + (idx * 44);
                 const pctFormatted = (percent * 100).toFixed(1) + '%';
                 svgHTML += `
-                    <rect x="250" y="${legendY - 10}" width="12" height="12" fill="${slice.color}" rx="3" />
-                    <text x="270" y="${legendY}" font-size="11" font-weight="bold" fill="#2c3e50">${slice.label}</text>
-                    <text x="270" y="${legendY + 13}" font-size="10" fill="#7f8c8d">${slice.val} ${slice.unit} (${pctFormatted})</text>
+                    <rect x="290" y="${legendY - 11}" width="14" height="14" fill="${slice.color}" rx="3" />
+                    <text x="315" y="${legendY}" font-size="12" font-weight="bold" fill="#2c3e50">${slice.label}</text>
+                    <text x="315" y="${legendY + 16}" font-size="11" fill="#7f8c8d">${slice.val} ${slice.unit} (${pctFormatted})</text>
                 `;
             });
 
-            svgHTML += `<circle cx="${centerX}" cy="${centerY}" r="38" fill="#ffffff" />`;
-            svgHTML += `<text x="${centerX}" y="${centerY - 4}" font-size="11" font-weight="bold" fill="#2c3e50" text-anchor="middle">Total Mix</text>`;
-            svgHTML += `<text x="${centerX}" y="${centerY + 14}" font-size="10" fill="#e67e22" text-anchor="middle">${total.toFixed(0)} units</text>`;
+            svgHTML += `<circle cx="${centerX}" cy="${centerY}" r="45" fill="#ffffff" />`;
+            svgHTML += `<text x="${centerX}" y="${centerY - 5}" font-size="12" font-weight="bold" fill="#2c3e50" text-anchor="middle">Total Mix</text>`;
+            svgHTML += `<text x="${centerX}" y="${centerY + 15}" font-size="11" fill="#e67e22" text-anchor="middle">${total.toFixed(0)} units</text>`;
 
             container.innerHTML = svgHTML;
         }
