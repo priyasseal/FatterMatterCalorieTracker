@@ -169,10 +169,8 @@
         // Authentication State Guard
         onAuthStateChanged(auth, (user) => {
             if (!user) {
-                // If not logged in, redirect to login page
                 window.location.href = "login.html";
             } else {
-                // Display logged-in user email
                 document.getElementById('userEmailDisplay').innerText = user.email;
             }
         });
