@@ -353,14 +353,23 @@
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('usernameEmail').value;
+            const inputVal = document.getElementById('usernameEmail').value.trim();
             const password = document.getElementById('password').value;
 
+            // Firebase Auth requires a valid email format
+            if (!inputVal.includes('@')) {
+                alert("Note: Firebase Auth requires your full account email address, not just a username.");
+                return;
+            }
+
             try {
-                await auth.signInWithEmailAndPassword(email, password);
+                console.log("Attempting login for:", inputVal);
+                await auth.signInWithEmailAndPassword(inputVal, password);
+                console.log("Login successful! Redirecting...");
                 window.location.href = "index.html";
             } catch (error) {
-                alert("Login failed: " + error.message);
+                console.error("Firebase Login Error:", error.code, error.message);
+                alert("Login failed (" + error.code + "): " + error.message);
             }
         });
     </script>
