@@ -1,371 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FMCT Burger Sign Up</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(#ffeb99, #ffb84d, #ff9933);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #5a2e00;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMCT - Sign Up</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-    /* --- SPLIT LAYOUT CONTAINER --- */
-    .page-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 60px;
-      max-width: 950px;
-      width: 100%;
-      padding: 20px;
-    }
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #fff8ec, #ffe5b4);
+        }
 
-    .burger-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 60px);
+        }
 
-    .burger {
-      width: 380px;
-      text-align: center;
-      position: relative;
-      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
-    }
+        .left-container {
+            width: 45%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px 50px;
+            box-shadow: 5px 0 25px rgba(46,204,113,0.05);
+            z-index: 2;
+        }
 
-    /* --- BURGER LAYERS --- */
-    .bun-top {
-      background: linear-gradient(to bottom, #f9d27a, #e8b85c);
-      height: 120px;
-      border-radius: 200px 200px 60px 60px;
-      box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
-      margin-bottom: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
+        .header-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(46,204,113,0.3);
+            text-decoration: none;
+            width: fit-content;
+        }
 
-    .bun-title {
-      font-size: 22px;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
-      margin: 0;
-    }
+        .signup-box {
+            max-width: 340px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
 
-    .sesame {
-      position: absolute;
-      width: 8px;
-      height: 4px;
-      background: #fff8dc;
-      border-radius: 50%;
-      opacity: 0.8;
-    }
+        .signup-box h2 {
+            font-size: 26px;
+            font-weight: bold;
+            color: #1e8449;
+            margin-bottom: 25px;
+        }
 
-    .layer {
-      width: 100%;
-      min-height: 55px;
-      height: auto;
-      padding: 12px 0;
-      margin: 12px 0;
-      border-radius: 40px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+        .input-group {
+            margin-bottom: 15px;
+        }
 
-    .lettuce {
-      background: repeating-linear-gradient(
-        45deg,
-        #9be27c,
-        #9be27c 10px,
-        #8bd66b 10px,
-        #8bd66b 20px
-      );
-    }
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 15px;
+            border: 2px solid #a9dfbf;
+            border-radius: 15px;
+            outline: none;
+            color: #1e8449;
+            background-color: #f4fcf7;
+        }
 
-    .tomato {
-      background: radial-gradient(circle at 30% 30%, #ff7b7b, #ff4d4d);
-    }
+        .input-field:focus {
+            border-color: #2ecc71;
+        }
 
-    .cheese {
-      background: linear-gradient(to right, #ffd84d, #ffcc33);
-    }
+        .btn-signup-action {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            border: 2px solid #1e8449;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(46,204,113,0.3);
+            margin-top: 10px;
+        }
 
-    .patty {
-      background: repeating-linear-gradient(
-        45deg,
-        #7a3f1a,
-        #7a3f1a 8px,
-        #5a2e00 8px,
-        #5a2e00 16px
-      );
-      border-radius: 30px;
-      height: 60px;
-      margin: 15px 0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    }
+        .btn-signup-action:hover {
+            background: linear-gradient(to bottom, #27ae60, #1e8449);
+        }
 
-    .bun-bottom {
-      background: linear-gradient(to top, #f9d27a, #e8b85c);
-      height: 90px;
-      border-radius: 60px 60px 200px 200px;
-      box-shadow: inset 0 10px 0 rgba(0,0,0,0.1);
-      margin-top: 15px;
-    }
+        #errorMsg {
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #d32f2f;
+            min-height: 18px;
+        }
 
-    /* --- INPUTS --- */
-    .ingredient-input {
-      width: 80%;
-      padding: 10px;
-      border-radius: 12px;
-      border: 2px solid transparent;
-      font-size: 15px;
-      outline: none;
-      background: rgba(255,255,255,0.92);
-      text-align: center;
-      font-weight: bold;
-      color: #5a2e00;
-      transition: 0.2s;
-    }
+        .login-link-text {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #8d6e63;
+        }
 
-    .ingredient-input:focus {
-      border: 2px solid #5a2e00;
-      background: #ffffff;
-    }
+        .login-link-text a {
+            color: #e67e22;
+            font-weight: bold;
+            text-decoration: none;
+        }
 
-    /* --- BUTTONS --- */
-    .signup-btn {
-      background: #ff4d4d;
-      color: white;
-      padding: 14px;
-      width: 90%;
-      border-radius: 20px;
-      border: 2px solid #e63946;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 15px auto 5px auto;
-      display: block;
-      transition: 0.2s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    }
+        .right-container {
+            width: 55%;
+            height: 100%;
+            background: linear-gradient(to bottom, #d5f5e3, #a9dfbf);
+            background-image: radial-gradient(#2ecc71 15%, transparent 16%);
+            background-size: 45px 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
 
-    .signup-btn:hover {
-      background: #ff7373;
-      transform: scale(1.03);
-    }
+        .tagline {
+            color: #145a32;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.4;
+        }
 
-    .login-link {
-      color: #5a2e00;
-      font-size: 13px;
-      font-weight: bold;
-      text-decoration: underline;
-      display: inline-block;
-      margin-top: 8px;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 8px 16px;
-      background-color: #fff7e6;
-      color: #5a2e00;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: bold;
-      border: 2px solid #ffcc33;
-      font-size: 13px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: 0.2s;
-    }
-
-    .back-btn:hover {
-      background-color: #ffe0b3;
-    }
-
-    #status {
-      margin-top: 10px;
-      font-weight: bold;
-      color: #5a2e00;
-      text-align: center;
-      font-size: 14px;
-      min-height: 20px;
-    }
-
-    /* --- RIGHT SIDE INFO CARD --- */
-    .info-card {
-      background: #fff7e6;
-      width: 320px;
-      padding: 25px;
-      border-radius: 20px;
-      border: 3px solid #ffcc33;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-      text-align: left;
-    }
-
-    .info-card h3 {
-      color: #d35400;
-      margin-top: 0;
-      font-size: 20px;
-    }
-
-    .info-card p {
-      font-size: 14px;
-      line-height: 1.5;
-      color: #5a2e00;
-    }
-
-    .feature-list {
-      list-style: none;
-      padding: 0;
-      margin: 15px 0 0 0;
-    }
-
-    .feature-list li {
-      margin-bottom: 12px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    @media (max-width: 768px) {
-      .page-container {
-        flex-direction: column;
-        gap: 30px;
-      }
-      .info-card {
-        width: 85%;
-        text-align: center;
-      }
-    }
-  </style>
+        footer {
+            background: #3e2723;
+            color: #ffcc80;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border-top: 4px solid #e67e22;
+        }
+    </style>
 </head>
-
 <body>
 
-  <div class="page-container">
+    <div class="main-wrapper">
+        <div class="left-container">
+            <div>
+                <a href="index.html" class="header-logo">🍔 FMCT</a>
+            </div>
 
-    <!-- LEFT: BURGER SIGN UP FORM -->
-    <div class="burger-wrapper">
-      <div class="burger">
+            <div class="signup-box">
+                <h2>Create Account</h2>
+                <form id="signupForm">
+                    <div class="input-group">
+                        <input type="email" id="email" class="input-field" placeholder="Email address" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password" class="input-field" placeholder="Password (min 6 chars)" required>
+                    </div>
+                    <button type="submit" id="submitBtn" class="btn-signup-action">Sign Up</button>
+                    <div id="errorMsg"></div>
+                </form>
+                <div class="login-link-text">
+                    Already have an account? <a href="login.html">Log in</a>
+                </div>
+            </div>
 
-        <div class="bun-top">
-          <div class="sesame" style="top: 20px; left: 60px;"></div>
-          <div class="sesame" style="top: 30px; left: 170px;"></div>
-          <div class="sesame" style="top: 25px; left: 280px;"></div>
-          <h2 class="bun-title">FMCT Sign Up</h2>
+            <div>
+                <a href="index.html" style="color: #8d6e63; font-size: 13px; font-weight: bold; text-decoration: none;">← Back to Home</a>
+            </div>
         </div>
 
-        <div class="layer lettuce">
-          <input class="ingredient-input" type="text" id="firstName" placeholder="First Name">
+        <div class="right-container">
+            <div class="tagline">Start your smart, mindful calorie tracking journey today.</div>
         </div>
-
-        <div class="layer lettuce">
-          <input class="ingredient-input" type="text" id="lastName" placeholder="Last Name">
-        </div>
-
-        <div class="layer tomato">
-          <input class="ingredient-input" type="email" id="email" placeholder="Email">
-        </div>
-
-        <div class="layer cheese">
-          <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
-        </div>
-
-        <button class="signup-btn" id="signupBtn">Sign Up</button>
-        <a href="login.html" class="login-link">Already have an account? Login here!</a>
-
-        <div class="patty"></div>
-        <div class="bun-bottom"></div>
-      </div>
-
-      <p id="status"></p>
-
-      <!-- BACK TO MAIN PAGE BUTTON -->
-      <a href="index.html" class="back-btn">← Back to Main Page</a>
     </div>
 
-    <!-- RIGHT: FILLER INFO CARD -->
-    <div class="info-card">
-      <h3>✨ Join Fatter Matter!</h3>
-      <p>Create your personal profile to start logging calories live from your Raspberry Pi Pico W scanner.</p>
-      
-      <ul class="feature-list">
-        <li>🏷️ <b>Unique Profiles:</b> Personalized dashboard view.</li>
-        <li>📊 <b>Daily Tracking:</b> Aggregated real-time nutrition stats.</li>
-        <li>🔐 <b>Secure Auth:</b> Cloud-backed Firebase account.</li>
-      </ul>
+    <footer>
+        Priyadarshini Seal copyright 2026
+    </footer>
 
-      <p style="margin-top: 20px; font-size: 13px; opacity: 0.8; text-align: center;">Get started in seconds! 🍔</p>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
+            authDomain: "fmct-58e22.firebaseapp.com",
+            projectId: "fmct-58e22",
+            storageBucket: "fmct-58e22.firebasestorage.app",
+            messagingSenderId: "479095036843",
+            appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee",
+            measurementId: "G-8HCFJHX7HG"
+        };
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
-      authDomain: "fmct-58e22.firebaseapp.com",
-      projectId: "fmct-58e22",
-      storageBucket: "fmct-58e22.firebasestorage.app",
-      messagingSenderId: "479095036843",
-      appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
-    };
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const submitBtn = document.getElementById('submitBtn');
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+            errorMsg.style.color = "#1e8449";
+            errorMsg.innerText = "Creating account...";
+            submitBtn.disabled = true;
 
-    document.getElementById("signupBtn").onclick = async function() {
-      const firstName = document.getElementById("firstName").value.trim();
-      const lastName = document.getElementById("lastName").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const status = document.getElementById("status");
-
-      if (firstName.length < 2) return status.innerHTML = "❌ First name too short!";
-      if (lastName.length < 2) return status.innerHTML = "❌ Last name too short!";
-      if (!email.includes("@") || !email.includes(".")) return status.innerHTML = "❌ Invalid email!";
-      if (password.length < 8 || password.length > 20) return status.innerHTML = "❌ Password must be 8–20 chars!";
-
-      status.innerHTML = "⏳ Cooking your account...";
-
-      try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-
-        await db.collection("users").doc(user.uid).set({
-          firstName,
-          lastName,
-          email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                window.location.href = "trend.html";
+            } catch (error) {
+                errorMsg.style.color = "#d32f2f";
+                errorMsg.innerText = error.message;
+                submitBtn.disabled = false;
+            }
         });
-
-        status.innerHTML = "🍔 Account ready! Redirecting...";
-        setTimeout(() => window.location.href = "index.html", 1000);
-
-      } catch (error) {
-        status.innerHTML = "❌ " + error.message;
-      }
-    };
-
-    document.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") document.getElementById("signupBtn").click();
-    });
-  </script>
+    </script>
 </body>
 </html>
