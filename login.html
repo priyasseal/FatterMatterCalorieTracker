@@ -20,7 +20,6 @@
             background: linear-gradient(to bottom, #fff3d6, #ffe0b3, #ffcc80);
         }
 
-        /* --- LEFT CONTAINER (LOGIN FORM) --- */
         .left-container {
             width: 45%;
             height: 100%;
@@ -126,7 +125,6 @@
             color: #5a2e00;
         }
 
-        /* --- RIGHT CONTAINER (ART, TAGLINE & PREVIEW WIDGETS) --- */
         .right-container {
             width: 55%;
             height: 100%;
@@ -141,7 +139,6 @@
             position: relative;
         }
 
-        /* DINNER PLATE & JUMPING BURGER ART */
         .art-stage {
             position: relative;
             width: 220px;
@@ -223,7 +220,6 @@
             margin-bottom: 25px;
         }
 
-        /* --- PREVIEW WIDGETS GRID --- */
         .preview-widgets {
             display: flex;
             gap: 12px;
@@ -264,7 +260,6 @@
 </head>
 <body>
 
-    <!-- LEFT SIDE: LOGIN FORM -->
     <div class="left-container">
         <div>
             <a href="index.html" class="header-logo">🍔 FMCT</a>
@@ -292,7 +287,6 @@
         </div>
     </div>
 
-    <!-- RIGHT SIDE: ANIMATED ART, TAGLINE & PREVIEW WIDGETS -->
     <div class="right-container">
         <div class="art-stage">
             <div class="jumping-burger">🍔</div>
@@ -306,7 +300,6 @@
             The cognitive app behind every bite.
         </div>
 
-        <!-- PREVIEW ANALYTIC WIDGETS -->
         <div class="preview-widgets">
             <div class="preview-card">
                 <div class="preview-icon">⏰</div>
@@ -326,13 +319,11 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULE SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
-        // Live Clock for Preview Widget
         function updateClock() {
             const now = new Date();
             const timeEl = document.getElementById('widgetTime');
