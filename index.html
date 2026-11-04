@@ -300,7 +300,6 @@
     <nav>
         <div class="logo">🍔 FMCT System</div>
         <div class="nav-controls" id="navControls">
-            <!-- Dynamically toggled based on auth state -->
             <span id="userEmailDisplay" style="font-size: 14px; font-weight: bold; color: #5a2e00;">Checking session...</span>
         </div>
     </nav>
@@ -352,6 +351,16 @@
             </div>
 
             <div class="metrics-grid">
+                <!-- NEW LIVE DATABASE METRICS WIDGET -->
+                <div class="card" style="border-color: #2ecc71;">
+                    <h3>Live Database Telemetry (fmct_items)</h3>
+                    <p>Real-time analytics fetched directly from your cloud database collection.</p>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <div class="stat-badge" id="metricTotalItems" style="background: #e8f8f5; color: #27ae60;">Items Scanned: Loading...</div>
+                        <div class="stat-badge" id="metricAvgCals" style="background: #e8f8f5; color: #27ae60;">Avg Calories: Loading...</div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h3>Hardware & Cloud Telemetry</h3>
                     <p>Monitors real-time data synchronization between the Raspberry Pi Pico 2 W microcontroller, optical barcode scanner, and Google Cloud Firestore pipelines.</p>
@@ -363,12 +372,6 @@
                     <p>Tracks pre-scan mindfulness prompt delays and pause intervals designed to foster conscious consumer decision-making before item logging.</p>
                     <div class="stat-badge" style="background: #e8f8f5; color: #27ae60;">Status: Active</div>
                 </div>
-
-                <div class="card">
-                    <h3>Synchronized Product Dataset</h3>
-                    <p>Manages live product records spanning your scanned items stored in the <code>fmct_items</code> collection leading up to November 2, 2026.</p>
-                    <div class="stat-badge">Live DB Sync</div>
-                </div>
             </div>
         </div>
     </div>
@@ -377,10 +380,11 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH PERSISTENCE & INLINE LOGIN -->
+    <!-- FIREBASE MODULE SCRIPTS WITH LIVE DATABASE METRICS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
@@ -394,13 +398,12 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Ensure session persists across page loads
         setPersistence(auth, browserLocalPersistence).catch((error) => {
             console.error("Persistence error:", error);
         });
 
-        // Live Clock Update
         function updateClock() {
             const now = new Date();
             const timeEl = document.getElementById('widgetTime');
@@ -411,7 +414,30 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Handle Inline Login Form Submission
+        // Fetch Live Database Metrics from fmct_items
+        async function fetchLiveMetrics() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "fmct_items"));
+                let count = 0;
+                let totalCals = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    count++;
+                    totalCals += parseFloat(data.calories) || 0;
+                });
+
+                const avgCals = count > 0 ? (totalCals / count).toFixed(1) : 0;
+
+                const itemsEl = document.getElementById('metricTotalItems');
+                const avgEl = document.getElementById('metricAvgCals');
+                if (itemsEl) itemsEl.innerText = `Items Scanned: ${count}`;
+                if (avgEl) avgEl.innerText = `Avg Calories: ${avgCals} kcal`;
+            } catch (error) {
+                console.error("Error fetching live metrics:", error);
+            }
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
@@ -425,7 +451,6 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // Auth state listener will automatically switch UI to logged-in dashboard view
             } catch (error) {
                 errorMsg.style.color = "#d32f2f";
                 errorMsg.innerText = error.message;
@@ -433,14 +458,12 @@
             }
         });
 
-        // Auth State Listener to toggle between Split-Screen Login and Main Dashboard
         onAuthStateChanged(auth, (user) => {
             const loggedOutView = document.getElementById('loggedOutView');
             const loggedInView = document.getElementById('loggedInView');
             const navControls = document.getElementById('navControls');
 
             if (user) {
-                // User is signed in: show dashboard and nav controls
                 loggedOutView.style.display = 'none';
                 loggedInView.style.display = 'block';
                 navControls.innerHTML = `
@@ -449,17 +472,16 @@
                     <button id="logoutBtn" class="btn-logout">Log Out</button>
                 `;
 
-                // Re-bind logout listener
+                fetchLiveMetrics();
+
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
                     try {
                         await signOut(auth);
-                        // UI will automatically toggle back to loggedOutView via onAuthStateChanged
                     } catch (error) {
                         alert("Error logging out: " + error.message);
                     }
                 });
             } else {
-                // User is signed out: show split-screen login view
                 loggedOutView.style.display = 'flex';
                 loggedInView.style.display = 'none';
                 navControls.innerHTML = `
