@@ -1,398 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FMCT - Burger Login</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(#ffeb99, #ffb84d, #ff9933);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #5a2e00;
-    }
-
-    /* --- SPLIT LAYOUT CONTAINER --- */
-    .page-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 60px;
-      max-width: 900px;
-      width: 100%;
-      padding: 20px;
-    }
-
-    .burger-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .burger {
-      width: 360px;
-      text-align: center;
-      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.25));
-    }
-
-    /* --- TOP BUN & SESAME SEEDS --- */
-    .bun-top {
-      background: linear-gradient(to bottom, #f9d27a, #e8b85c);
-      height: 110px;
-      border-radius: 200px 200px 40px 40px;
-      box-shadow: inset 0 -8px 0 rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .bun-title {
-      font-size: 22px;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
-      margin: 0;
-    }
-
-    .sesame {
-      position: absolute;
-      width: 8px;
-      height: 4px;
-      background: #fff8dc;
-      border-radius: 50%;
-      opacity: 0.8;
-    }
-
-    /* --- LAYERS --- */
-    .layer {
-      width: 100%;
-      min-height: 55px;
-      padding: 10px 0;
-      margin: 12px 0;
-      border-radius: 30px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .lettuce {
-      background: linear-gradient(to right, #7bc043, #4bc043);
-    }
-
-    .tomato {
-      background: radial-gradient(circle at 30% 30%, #ff7b7b, #ff4d4d);
-    }
-
-    .cheese {
-      background: linear-gradient(to right, #ffd84d, #ffcc33);
-    }
-
-    .patty {
-      background: repeating-linear-gradient(
-        45deg,
-        #7a3f1a,
-        #7a3f1a 8px,
-        #5a2e00 8px,
-        #5a2e00 16px
-      );
-      border-radius: 30px;
-      height: 55px;
-      margin: 15px 0;
-    }
-
-    .bun-bottom {
-      background: linear-gradient(to top, #f9d27a, #e8b85c);
-      height: 80px;
-      border-radius: 40px 40px 180px 180px;
-      box-shadow: inset 0 8px 0 rgba(0,0,0,0.1);
-      margin-top: 15px;
-    }
-
-    /* --- INPUTS --- */
-    .ingredient-input {
-      width: 82%;
-      padding: 10px 14px;
-      border-radius: 20px;
-      border: 2px solid transparent;
-      font-size: 15px;
-      outline: none;
-      background: rgba(255,255,255,0.95);
-      text-align: center;
-      font-weight: bold;
-      color: #5a2e00;
-      transition: 0.2s;
-    }
-
-    .ingredient-input:focus {
-      border: 2px solid #5a2e00;
-      background: #ffffff;
-    }
-
-    /* --- BUTTON & TOGGLES --- */
-    .auth-btn {
-      background: radial-gradient(circle at 30% 30%, #ff7b7b, #ff4d4d);
-      color: white;
-      padding: 12px;
-      width: 88%;
-      border-radius: 20px;
-      border: 2px solid #e63946;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 15px auto;
-      display: block;
-      transition: 0.2s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    }
-
-    .auth-btn:hover {
-      background: #ff5252;
-      transform: scale(1.03);
-    }
-
-    .toggle-text {
-      color: #5a2e00;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: underline;
-      margin-top: 10px;
-      display: inline-block;
-    }
-
-    #status {
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 14px;
-      min-height: 20px;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 8px 16px;
-      background-color: #fff7e6;
-      color: #5a2e00;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: bold;
-      border: 2px solid #ffcc33;
-      font-size: 13px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: 0.2s;
-    }
-
-    .back-btn:hover {
-      background-color: #ffe0b3;
-    }
-
-    /* --- RIGHT SIDE INFO CARD --- -->
-    .info-card {
-      background: #fff7e6;
-      width: 320px;
-      padding: 25px;
-      border-radius: 20px;
-      border: 3px solid #ffcc33;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-      text-align: left;
-    }
-
-    .info-card h3 {
-      color: #d35400;
-      margin-top: 0;
-      font-size: 20px;
-    }
-
-    .info-card p {
-      font-size: 14px;
-      line-height: 1.5;
-      color: #5a2e00;
-    }
-
-    .feature-list {
-      list-style: none;
-      padding: 0;
-      margin: 15px 0 0 0;
-    }
-
-    .feature-list li {
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    /* Responsive adjustment for small screens */
-    @media (max-width: 768px) {
-      .page-container {
-        flex-direction: column;
-        gap: 30px;
-      }
-      .info-card {
-        width: 85%;
-        text-align: center;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="page-container">
-
-    <!-- LEFT: BURGER LOGIN FORM -->
-    <div class="burger-wrapper">
-      <div class="burger">
-
-        <!-- TOP BUN WITH TITLE & SEEDS -->
-        <div class="bun-top">
-          <div class="sesame" style="top: 20px; left: 60px;"></div>
-          <div class="sesame" style="top: 30px; left: 160px;"></div>
-          <div class="sesame" style="top: 25px; left: 260px;"></div>
-          <h2 class="bun-title" id="formTitle">FMCT Login</h2>
-        </div>
-
-        <!-- FIRST NAME FIELD (Hidden by default for Login) -->
-        <div class="layer lettuce" id="firstNameLayer" style="display: none;">
-          <input class="ingredient-input" type="text" id="firstName" placeholder="First Name (e.g. Bobbington)">
-        </div>
-
-        <!-- EMAIL LAYER -->
-        <div class="layer tomato">
-          <input class="ingredient-input" type="email" id="email" placeholder="Email Address">
-        </div>
-
-        <!-- PASSWORD LAYER -->
-        <div class="layer cheese">
-          <input class="ingredient-input" type="password" id="password" placeholder="Password (8–20 chars)">
-        </div>
-
-        <!-- ACTION BUTTON -->
-        <button class="auth-btn" id="submitBtn">Login</button>
-
-        <!-- STATUS & TOGGLE -->
-        <p id="status"></p>
-        <span class="toggle-text" id="toggleMode">Need an account? Sign Up here!</span>
-
-        <div class="patty"></div>
-        <div class="bun-bottom"></div>
-      </div>
-
-      <!-- BACK TO MAIN PAGE BUTTON -->
-      <a href="index.html" class="back-btn">← Back to Main Page</a>
-    </div>
-
-    <!-- RIGHT: FILLER INFO CARD -->
-    <div class="info-card">
-      <h3>🍔 Welcome to FMCT!</h3>
-      <p>The cloud-connected nutritional tracking dashboard powered by hardware telemetry.</p>
-      
-      <ul class="feature-list">
-        <li>⚡ <b>Pico W Integration:</b> Real-time barcode scanning.</li>
-        <li>☁️ <b>Cloud Sync:</b> Powered by Google Cloud Firestore.</li>
-        <li>📈 <b>Live Trends:</b> Interactive daily calorie charts.</li>
-      </ul>
-
-      <p style="margin-top: 20px; font-size: 13px; opacity: 0.8; text-align: center;">Scan smarter, eat healthier! ✨</p>
-    </div>
-
-  </div>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
-      authDomain: "fmct-58e22.firebaseapp.com",
-      projectId: "fmct-58e22",
-      storageBucket: "fmct-58e22.firebasestorage.app",
-      messagingSenderId: "479095036843",
-      appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    let isSignUp = false;
-
-    const formTitle = document.getElementById("formTitle");
-    const firstNameLayer = document.getElementById("firstNameLayer");
-    const submitBtn = document.getElementById("submitBtn");
-    const toggleMode = document.getElementById("toggleMode");
-    const status = document.getElementById("status");
-
-    // Toggle between Login and Sign Up modes
-    toggleMode.onclick = () => {
-      isSignUp = !isSignUp;
-      status.innerText = "";
-      if (isSignUp) {
-        formTitle.innerText = "FMCT Sign Up";
-        submitBtn.innerText = "Create Account";
-        firstNameLayer.style.display = "flex";
-        toggleMode.innerText = "Already have an account? Login!";
-      } else {
-        formTitle.innerText = "FMCT Login";
-        submitBtn.innerText = "Login";
-        firstNameLayer.style.display = "none";
-        toggleMode.innerText = "Need an account? Sign Up here!";
-      }
-    };
-
-    // Handle Auth Submission
-    submitBtn.onclick = async () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const firstName = document.getElementById("firstName").value.trim();
-
-      if (!email.includes("@") || !email.includes(".")) {
-        return status.innerHTML = "❌ Invalid email address!";
-      }
-      if (password.length < 8 || password.length > 20) {
-        return status.innerHTML = "❌ Password must be 8–20 characters!";
-      }
-      if (isSignUp && !firstName) {
-        return status.innerHTML = "❌ Please enter your First Name!";
-      }
-
-      status.innerHTML = isSignUp ? "⏳ Creating account..." : "⏳ Logging in...";
-
-      try {
-        if (isSignUp) {
-          const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-          const uid = userCredential.user.uid;
-
-          await db.collection("users").doc(uid).set({
-            firstName: firstName,
-            email: email,
-            createdAt: new Date().toISOString()
-          });
-
-          status.innerHTML = "🍔 Account created! Redirecting...";
-        } else {
-          await auth.signInWithEmailAndPassword(email, password);
-          status.innerHTML = "🍔 Logged in! Redirecting...";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMCT - Log In</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        setTimeout(() => { window.location.href = "index.html"; }, 1000);
+        body {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #fff3d6, #ffe0b3, #ffcc80);
+        }
 
-      } catch (error) {
-        status.innerHTML = "❌ " + error.message;
-      }
-    };
+        .left-container {
+            width: 45%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px 50px;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.05);
+            z-index: 2;
+        }
 
-    document.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") submitBtn.click();
-    });
-  </script>
+        .header-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(to right, #ff9900, #ff7043);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(255,153,0,0.3);
+            text-decoration: none;
+            width: fit-content;
+        }
+
+        .login-box {
+            max-width: 340px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-size: 26px;
+            font-weight: bold;
+            color: #5a2e00;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 15px;
+            border: 2px solid #ffd580;
+            border-radius: 15px;
+            outline: none;
+            color: #5a2e00;
+            background-color: #fffdf9;
+        }
+
+        .input-field:focus {
+            border-color: #ff9900;
+        }
+
+        .btn-letsgo {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(to bottom, #ff9900, #e67e22);
+            border: 2px solid #d35400;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(230,126,34,0.3);
+            margin-top: 10px;
+        }
+
+        .btn-letsgo:hover {
+            background: linear-gradient(to bottom, #ff8800, #d35400);
+        }
+
+        .signup-link-text {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #8d6e63;
+        }
+
+        .signup-link-text a {
+            color: #e67e22;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .right-container {
+            width: 55%;
+            height: 100%;
+            background: linear-gradient(to bottom, #ffcc80, #ffb347);
+            background-image: radial-gradient(#ffa726 15%, transparent 16%);
+            background-size: 45px 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .tagline {
+            color: #5a2e00;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="left-container">
+        <div>
+            <a href="index.html" class="header-logo">🍔 FMCT</a>
+        </div>
+
+        <div class="login-box">
+            <h2>Log in</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="email" id="email" class="input-field" placeholder="Email address" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" class="input-field" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-letsgo">Let's go!</button>
+            </form>
+            <div class="signup-link-text">
+                Don't have an account? <a href="signup.html">Sign up</a>
+            </div>
+        </div>
+
+        <div>
+            <a href="index.html" style="color: #8d6e63; font-size: 13px; font-weight: bold; text-decoration: none;">← Back to Home</a>
+        </div>
+    </div>
+
+    <div class="right-container">
+        <div class="tagline">The cognitive app behind every bite.</div>
+    </div>
+
+    <!-- FIREBASE MODULE SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
+            authDomain: "fmct-58e22.firebaseapp.com",
+            projectId: "fmct-58e22",
+            storageBucket: "fmct-58e22.firebasestorage.app",
+            messagingSenderId: "479095036843",
+            appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee",
+            measurementId: "G-8HCFJHX7HG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = "index.html"; // Redirect to dashboard
+            } catch (error) {
+                alert("Login failed: " + error.message);
+            }
+        });
+    </script>
 </body>
 </html>
