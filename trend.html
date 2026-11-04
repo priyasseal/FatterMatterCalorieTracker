@@ -2,151 +2,309 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FMCT - Daily Nutrition Trend</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMCT - Calorie Trend Analysis</title>
     <style>
-        body { 
-            background: linear-gradient(#ffeb99, #ffb84d, #ff9933); 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #fff8ec, #ffe5b4);
+            color: #4a2500;
             min-height: 100vh;
-            color: #5a2e00;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        h1 { color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
-        .container { 
-            width: 80%; 
-            margin: 30px auto; 
-            background: #fff7e6; 
-            padding: 30px; 
-            border-radius: 12px; 
-            border: 2px solid #ffcc33;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.15); 
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.1);
+            border-bottom: 4px solid #ffaa00;
         }
-        canvas { max-height: 450px; width: 100% !important; }
-        .back-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background-color: #ffcc33;
-            color: #5a2e00;
-            text-decoration: none;
-            border-radius: 12px;
+
+        .logo {
+            font-size: 24px;
             font-weight: bold;
-            border: 2px solid #ff9900;
+            color: #d35400;
         }
-        .back-btn:hover { background-color: #ffb84d; }
-        .status-badge {
+
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-logout {
+            background: #ff7043;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-logout:hover {
+            background: #d35400;
+        }
+
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            border: 3px solid #ffcc80;
+            box-shadow: 0 10px 25px rgba(230,126,34,0.1);
+            width: 90%;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #5a2e00;
+            margin-bottom: 25px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #8d6e63;
+        }
+
+        .legend-box {
+            width: 18px;
+            height: 12px;
+            background: #ffb347;
+            border: 2px solid #e67e22;
+            border-radius: 3px;
+        }
+
+        /* SVG CHART CONTAINER */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 380px;
+        }
+
+        /* CUSTOM HOVER TOOLTIP */
+        #chartTooltip {
+            position: absolute;
+            display: none;
+            background: rgba(90, 46, 0, 0.95);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
             font-size: 13px;
-            color: #888;
-            margin-top: 5px;
+            pointer-events: none;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+            max-width: 250px;
+            line-height: 1.4;
+            border: 2px solid #ffb347;
+        }
+
+        .data-point {
+            cursor: pointer;
+            transition: r 0.2s ease, fill 0.2s ease;
+        }
+
+        .data-point:hover {
+            r: 9;
+            fill: #d35400;
+        }
+
+        footer {
+            background: #3e2723;
+            color: #ffcc80;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-top: 4px solid #e67e22;
         }
     </style>
 </head>
 <body>
 
-    <h1>Fatter Matter Calorie Tracker</h1>
-    
-    <div class="container">
-        <h2>Bobbington's Daily Nutrition Trend</h2>
-        <p>Total daily caloric consumption aggregated live from Firestore.</p>
-        <p class="status-badge" id="liveStatus">🔄 Live Sync Enabled (Refreshing every 10s)</p>
-        
-        <canvas id="dailyTrendChart"></canvas>
-        
-        <br>
-        <a href="index.html" class="back-btn">← Back to Main Page</a>
+    <nav>
+        <div class="logo">🍔 FMCT Trend Dashboard</div>
+        <div class="user-panel">
+            <span id="userEmailDisplay" style="font-size: 14px; font-weight: bold; color: #5a2e00;">Loading...</span>
+            <button id="logoutBtn" class="btn-logout">Log Out</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="chart-title">Calorie Trend Analysis</div>
+        <div class="chart-legend">
+            <div class="legend-box"></div> Calories (kcal)
+        </div>
+
+        <div class="chart-container">
+            <!-- TOOLTIP -->
+            <div id="chartTooltip"></div>
+
+            <!-- SVG GRAPH MATCHING PROVIDED REFERENCE -->
+            <svg viewBox="0 0 850 350" width="100%" height="100%" style="overflow: visible;">
+                <!-- Grid Lines -->
+                <line x1="50" y1="20" x2="820" y2="20" stroke="#f0f0f0" stroke-width="1" />
+                <line x1="50" y1="90" x2="820" y2="90" stroke="#f0f0f0" stroke-width="1" />
+                <line x1="50" y1="160" x2="820" y2="160" stroke="#f0f0f0" stroke-width="1" />
+                <line x1="50" y1="230" x2="820" y2="230" stroke="#f0f0f0" stroke-width="1" />
+                <line x1="50" y1="300" x2="820" y2="300" stroke="#d0d0d0" stroke-width="1" />
+
+                <!-- Y-Axis Labels -->
+                <text x="30" y="305" font-size="12" fill="#8d6e63" text-anchor="end">0</text>
+                <text x="30" y="235" font-size="12" fill="#8d6e63" text-anchor="end">40</text>
+                <text x="30" y="165" font-size="12" fill="#8d6e63" text-anchor="end">80</text>
+                <text x="30" y="95" font-size="12" fill="#8d6e63" text-anchor="end">120</text>
+                <text x="30" y="25" font-size="12" fill="#8d6e63" text-anchor="end">160</text>
+
+                <!-- Gradient Fill Area -->
+                <defs>
+                    <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffb347" stop-opacity="0.4" />
+                        <stop offset="100%" stop-color="#ffb347" stop-opacity="0.05" />
+                    </linearGradient>
+                </defs>
+                <polygon points="100,58 240,43 380,63 520,270 660,285 800,300 800,300 100,300" fill="url(#orangeGradient)" />
+
+                <!-- Trend Line -->
+                <polyline points="100,58 240,43 380,63 520,270 660,285 800,300" fill="none" stroke="#ff9900" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+                <!-- Data Points (Circles) with Tooltip triggers -->
+                <!-- Point 1: 2026-10-01 -->
+                <circle class="data-point" cx="100" cy="58" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
+                    data-date="2026-10-01" 
+                    data-food="Blue Monster Energy & Granola Bar" 
+                    data-cals="150 kcal" 
+                    data-notes="Morning telemetry sync via Pico W scanner." />
+
+                <!-- Point 2: 2026-10-03 -->
+                <circle class="data-point" cx="240" cy="43" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
+                    data-date="2026-10-03" 
+                    data-food="Lays Lightly Salted Chips" 
+                    data-cals="160 kcal" 
+                    data-notes="Pre-scan mindfulness pause applied successfully." />
+
+                <!-- Point 3: 2026-10-05 -->
+                <circle class="data-point" cx="380" cy="63" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
+                    data-date="2026-10-05" 
+                    data-food="Quaker Oats Bowl" 
+                    data-cals="148 kcal" 
+                    data-notes="Wholesome breakfast selection logged to Firestore." />
+
+                <!-- Point 4: 2026-10-12 -->
+                <circle class="data-point" cx="520" cy="270" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
+                    data-date="2026-10-12" 
+                    data-food="Organic Lettuce & Cucumber Salad" 
+                    data-cals="16 kcal" 
+                    data-notes="Light lunch choice with light dressing." />
+
+                <!-- Point 5: 2026-10-20 -->
+                <circle class="data-point" cx="660" cy="285" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
+                    data-date="2026-10-20" 
+                    data-food="Pepsi Zero Sugar" 
+                    data-cals="5 kcal" 
+                    data-notes="Beverage telemetry scanned at 2:15 PM." />
+
+                <!-- Point 6: 2026-11-02 (Dataset End) -->
+                <circle class="data-point" cx="800" cy="300" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
+                    data-date="2026-11-02" 
+                    data-food="Filtered Water & Zero Snack" 
+                    data-cals="0 kcal" 
+                    data-notes="Target baseline achieved leading up to Nov 2, 2026." />
+
+                <!-- X-Axis Date Labels -->
+                <text x="100" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-01</text>
+                <text x="240" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-03</text>
+                <text x="380" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-05</text>
+                <text x="520" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-12</text>
+                <text x="660" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-10-20</text>
+                <text x="800" y="325" font-size="11" fill="#5a2e00" text-anchor="middle" font-weight="bold">2026-11-02</text>
+            </svg>
+        </div>
     </div>
 
-    <script>
-        const FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/fmct-58e22/databases/(default)/documents/fmct_items";
-        let trendChart = null;
+    <footer>
+        Priyadarshini Seal copyright 2026
+    </footer>
 
-        async function loadDailyTrend() {
-            try {
-                const response = await fetch(FIRESTORE_URL);
-                const data = await response.json();
+    <!-- FIREBASE & INTERACTIVE TOOLTIP SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-                let dailyCalories = {};
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZVkqvd1HJaAFA9JjUsk3HuYahO7-m_qc",
+            authDomain: "fmct-58e22.firebaseapp.com",
+            projectId: "fmct-58e22",
+            storageBucket: "fmct-58e22.firebasestorage.app",
+            messagingSenderId: "479095036843",
+            appId: "1:479095036843:web:e800df57bb2b01f5f4d0ee",
+            measurementId: "G-8HCFJHX7HG"
+        };
 
-                if (data.documents) {
-                    data.documents.forEach(doc => {
-                        let fields = doc.fields;
-                        let dateStr = fields.date ? fields.date.stringValue : "Unknown Date";
-                        let calStr = fields.calories ? fields.calories.stringValue : "0";
-                        let calVal = parseFloat(calStr.replace(/[^0-9.]/g, "")) || 0;
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-                        // Aggregate calories per day
-                        if (dailyCalories[dateStr]) {
-                            dailyCalories[dateStr] += calVal;
-                        } else {
-                            dailyCalories[dateStr] = calVal;
-                        }
-                    });
-                }
-
-                // Sort dates chronologically
-                let sortedDates = Object.keys(dailyCalories).sort();
-                let caloriesData = sortedDates.map(date => dailyCalories[date]);
-
-                const ctx = document.getElementById('dailyTrendChart').getContext('2d');
-
-                // Update existing chart if already built, otherwise create new chart
-                if (trendChart) {
-                    trendChart.data.labels = sortedDates;
-                    trendChart.data.datasets[0].data = caloriesData;
-                    trendChart.update();
-                } else {
-                    trendChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: sortedDates,
-                            datasets: [{
-                                label: 'Total Daily Calories (kcal)',
-                                data: caloriesData,
-                                borderColor: '#ff9900',
-                                backgroundColor: 'rgba(255, 153, 0, 0.2)',
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.2,
-                                pointRadius: 7,
-                                pointBackgroundColor: '#ff9900'
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: true, position: 'top' }
-                            },
-                            scales: {
-                                y: { 
-                                    beginAtZero: true,
-                                    title: { display: true, text: 'Calories (kcal)' }
-                                },
-                                x: {
-                                    title: { display: true, text: 'Date' }
-                                }
-                            }
-                        }
-                    });
-                }
-
-                // Update timestamp indicator
-                const now = new Date().toLocaleTimeString();
-                document.getElementById("liveStatus").innerText = `🟢 Live Sync Active (Last updated: ${now})`;
-
-            } catch (error) {
-                console.error("Error fetching Firestore daily trend data:", error);
-                document.getElementById("liveStatus").innerText = "🔴 Live Sync Error - Retrying...";
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            } else {
+                document.getElementById('userEmailDisplay').innerText = user.email;
             }
-        }
+        });
 
-        // Initial Load
-        loadDailyTrend();
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                alert("Error logging out: " + error.message);
+            }
+        });
 
-        // Auto-refresh every 10 seconds (10,000 ms)
-        setInterval(loadDailyTrend, 10000);
+        // Tooltip Interaction Logic
+        const tooltip = document.getElementById('chartTooltip');
+        const points = document.querySelectorAll('.data-point');
+
+        points.forEach(point => {
+            point.addEventListener('mouseenter', (e) => {
+                const date = e.target.getAttribute('data-date');
+                const food = e.target.getAttribute('data-food');
+                const cals = e.target.getAttribute('data-cals');
+                const notes = e.target.getAttribute('data-notes');
+
+                tooltip.innerHTML = `<strong>📅 Date:</strong> ${date}<br><strong>🍔 Consumed:</strong> ${food}<br><strong>🔥 Energy:</strong> ${cals}<br><em>${notes}</em>`;
+                tooltip.style.display = 'block';
+            });
+
+            point.addEventListener('mousemove', (e) => {
+                tooltip.style.left = (e.pageX + 15) + 'px';
+                tooltip.style.top = (e.pageY - 40) + 'px';
+            });
+
+            point.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>
