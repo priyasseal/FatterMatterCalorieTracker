@@ -125,7 +125,7 @@
             height: 400px;
         }
 
-        /* Tooltip positioned adjacent to cursor */
+        /* Tooltip positioned directly adjacent to cursor with minimal offset */
         #chartTooltip {
             position: absolute;
             display: none;
@@ -185,7 +185,7 @@
         <div class="chart-container">
             <div id="chartTooltip"></div>
 
-            <svg id="trendSvg" viewBox="0 0 850 370" width="100%" height="100%" style="overflow: visible;">
+            <svg id="trendSvg" viewBox="0 0 850 380" width="100%" height="100%" style="overflow: visible;">
                 <line x1="60" y1="20" x2="820" y2="20" stroke="#f0f0f0" stroke-width="1" />
                 <line x1="60" y1="85" x2="820" y2="85" stroke="#f0f0f0" stroke-width="1" />
                 <line x1="60" y1="150" x2="820" y2="150" stroke="#f0f0f0" stroke-width="1" />
@@ -209,7 +209,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -225,6 +225,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Session Persistence
+        setPersistence(auth, browserLocalPersistence).catch(err => console.error(err));
 
         onAuthStateChanged(auth, (user) => {
             if (!user) {
@@ -276,8 +279,8 @@
                 return;
             }
 
-            const startX = 100;
-            const endX = 780;
+            const startX = 80;
+            const endX = 800;
             const stepX = items.length > 1 ? (endX - startX) / (items.length - 1) : 0;
             
             let pointsString = "";
@@ -315,7 +318,15 @@
                 const x = startX + (index * stepX);
                 const y = 280 - Math.min((item.calories / 200) * 260, 260);
 
-                // Added text rotation and anchor adjustment to prevent label overlap
+                // Format clean date (YYYY-MM-DD -> MM/DD) to avoid overlapping text
+                let dateDisplay = item.date;
+                if (item.date && item.date.includes('-')) {
+                    const parts = item.date.split('-');
+                    if (parts.length === 3) {
+                        dateDisplay = `${parts[1]}/${parts[2]}`;
+                    }
+                }
+
                 svgHTML += `
                     <circle class="data-point" cx="${x}" cy="${y}" r="6" fill="#ffffff" stroke="#ff9900" stroke-width="3"
                         data-date="${item.date}" 
@@ -323,7 +334,7 @@
                         data-cals="${item.calories} kcal" 
                         data-sodium="${item.sodium}"
                         data-sugar="${item.sugar}" />
-                    <text x="${x}" y="310" font-size="11" fill="#5a2e00" text-anchor="end" transform="rotate(-25, ${x}, 310)" font-weight="bold">${item.date} (${item.item})</text>
+                    <text x="${x}" y="305" font-size="11" fill="#5a2e00" text-anchor="end" transform="rotate(-45, ${x}, 305)" font-weight="bold">${dateDisplay}</text>
                 `;
             });
 
