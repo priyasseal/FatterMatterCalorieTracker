@@ -246,7 +246,7 @@
         <div class="logo">🍔 FMCT Analytics Command</div>
         <div class="nav-controls">
             <span id="userEmailDisplay" style="font-size: 14px; font-weight: bold; color: #5a2e00;">Checking session...</span>
-            <a href="index.html" class="btn-dash">Main Dashboard</a>
+            <a href="index.html" class="btn-dash">⬅ Back to FMCT Command Hub</a>
             <button id="logoutBtn" class="btn-logout">Log Out</button>
         </div>
     </nav>
@@ -330,7 +330,7 @@
                 </thead>
                 <tbody id="telemetryTableBody">
                     <tr>
-                        <td colspan="6" style="text-align: center; color: #95a5a6;">Loading telemetry data from Firestore...</td>
+                        <td colspan="6" style="text-align: center; color: #95a5a6;">Loading telemetry data from database...</td>
                     </tr>
                 </tbody>
             </table>
@@ -411,7 +411,7 @@
 
                     items.push({
                         id: doc.id,
-                        item: data.item || "Unknown Item",
+                        item: data.item || data.name || data.product || "Unknown Item",
                         calories: cals,
                         date: data.date || "2026-10-01",
                         sodium: data.sodium || "0mg",
@@ -431,11 +431,10 @@
                 renderLineBarChart(items);
                 renderDataTable(items);
             } catch (error) {
-                console.error("Error loading Firestore items:", error);
+                console.error("Error loading items:", error);
             }
         }
 
-        // ENLARGED PROFESSIONAL PIE / DONUT CHART
         function renderProfessionalPieChart(cals, chol, sugar, sodium) {
             const container = document.getElementById('pieContent');
             const total = cals + chol + sugar + sodium || 1;
@@ -451,7 +450,7 @@
             let svgHTML = '';
             const centerX = 160;
             const centerY = 150;
-            const radius = 95; // Increased radius for a much bigger, prominent chart
+            const radius = 95;
 
             slices.forEach((slice, idx) => {
                 const percent = slice.val / total;
