@@ -37,7 +37,13 @@
             color: #d35400;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            border-radius: 8px;
         }
 
         .nav-controls {
@@ -91,6 +97,14 @@
             flex-direction: column;
             justify-content: center;
             overflow-y: auto;
+        }
+
+        .project-logo-preview {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.15);
         }
 
         .hero-left h1 {
@@ -420,7 +434,9 @@
 <body>
 
     <nav>
-        <div class="logo">🍔 FMCT System</div>
+        <div class="logo">
+            <img src="logo.png" alt="FMCT Logo"> FMCT System
+        </div>
         <div class="nav-controls" id="navControls">
             <span id="userEmailDisplay" style="font-size: 14px; font-weight: bold; color: #5a2e00;">Checking session...</span>
         </div>
@@ -429,12 +445,13 @@
     <!-- LOGGED OUT: SPLIT SCREEN LANDING & LOGIN -->
     <div id="loggedOutView">
         <div class="hero-left">
+            <img src="logo.png" alt="FMCT Logo" class="project-logo-preview">
             <h1>Fatter Matter Cognitive Tracker</h1>
             <div class="tagline">The Cognitive App Behind Every Bite</div>
             <div class="desc-box">
                 <div class="mini-food-art">🥗</div>
                 <p>
-                    Fatter Matter Calorie Tracker (FMCT) provides a faster, smarter, and significantly more efficient way to log and track nutrition using Raspberry Pi Pico hardware and cloud telemetry.
+                    Fatter Matter Cognitive Tracker (FMCT) provides a faster, smarter, and significantly more efficient way to log and track nutrition using Raspberry Pi Pico hardware and cloud telemetry.
                 </p>
             </div>
             <div class="about-snippet">
@@ -528,7 +545,7 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH GENERIC MESSAGING -->
+    <!-- FIREBASE MODULE SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -625,7 +642,6 @@
             input.focus();
         };
 
-        // Advanced AI Agent Logic Engine with Generic User-Facing Responses
         window.askAgent = function(query) {
             const chatContainer = document.getElementById('chatContainer');
             
@@ -646,7 +662,6 @@
             } else if (q.includes('how many') || q.includes('products scanned') || q.includes('total items')) {
                 reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your database telemetry!`;
             } else {
-                // PRIORITIZE PRODUCT LOOKUP FIRST
                 let foundItem = liveDataCache.items.find(i => q.includes(i.name) || i.name.includes(q));
 
                 if (foundItem) {
