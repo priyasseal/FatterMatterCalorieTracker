@@ -528,7 +528,7 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH PRIORITIZED PRODUCT LOOKUP & TOTAL NUTRIENTS -->
+    <!-- FIREBASE MODULE SCRIPTS WITH ROBUST PRODUCT INTENT & FIELD FALLBACKS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -549,6 +549,7 @@
         const db = getFirestore(app);
 
         let liveDataCache = {
+            loaded: false,
             count: 0,
             totalCals: 0,
             totalSodium: 0,
@@ -583,7 +584,7 @@
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    const itemName = data.item || "Unknown Item";
+                    const itemName = data.item || data.name || data.product || "Unknown Item";
                     const cals = parseFloat(data.calories) || 0;
                     const sodium = data.sodium || "0mg";
                     const chol = data.chol || "0mg";
@@ -607,6 +608,8 @@
                     });
                 });
 
+                liveDataCache.loaded = true;
+
                 const itemsEl = document.getElementById('metricTotalItems');
                 const nutrientsEl = document.getElementById('metricTotalNutrients');
                 if (itemsEl) itemsEl.innerText = `Items Scanned: ${liveDataCache.count}`;
@@ -622,7 +625,7 @@
             input.focus();
         };
 
-        // Advanced AI Agent Logic Engine with Prioritized Product Matching
+        // Advanced AI Agent Logic Engine with Corrected Priority Routing
         window.askAgent = function(query) {
             const chatContainer = document.getElementById('chatContainer');
             
@@ -635,7 +638,9 @@
             let showTrendButton = false;
             const q = query.toLowerCase().trim();
 
-            if (q.includes('trend') || q.includes('intake') || q.includes('graph') || q.includes('analysis')) {
+            if (!liveDataCache.loaded) {
+                reply = `⏳ Database telemetry is still syncing with Firestore. Please wait a moment and try again!`;
+            } else if (q.includes('trend') || q.includes('intake') || q.includes('graph') || q.includes('analysis')) {
                 reply = `📈 Opening your nutritional trend analysis dashboard... Click below to view your full bar-line chart and distribution mix!`;
                 showTrendButton = true;
             } else if (q.includes('how many') || q.includes('products scanned') || q.includes('total items')) {
