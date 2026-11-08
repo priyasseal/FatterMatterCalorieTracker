@@ -76,7 +76,7 @@
             background: #d35400;
         }
 
-        /* SPLIT-SCREEN LANDING / LOGIN STYLES (Shown when logged out) */
+        /* SPLIT-SCREEN LANDING / LOGIN STYLES */
         #loggedOutView {
             display: flex;
             flex: 1;
@@ -342,7 +342,7 @@
             background: #f8f9fa;
             border-radius: 14px;
             padding: 15px;
-            height: 200px;
+            height: 220px;
             overflow-y: auto;
             border: 1px solid #eef2f5;
             margin-bottom: 15px;
@@ -356,7 +356,7 @@
             padding: 10px 14px;
             border-radius: 12px;
             font-size: 13px;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .msg-bot {
@@ -507,17 +507,17 @@
                     <button class="chip" onclick="askAgent('How many products have been used?')">💡 Products Scanned?</button>
                     <button class="chip" onclick="askAgent('What are the total calories?')">🔥 Total Calories?</button>
                     <button class="chip" onclick="askAgent('Show me the trend of my food intake')">📈 Show Intake Trend</button>
-                    <button class="chip" onclick="askAgent('Is Bhindi in my items?')">🔍 Search Product (Bhindi)</button>
+                    <button class="chip" onclick="triggerSearchProductPrompt()">🔍 Search Product</button>
                 </div>
 
                 <div class="chat-box" id="chatContainer">
                     <div class="chat-msg msg-bot">
-                        Hello! I am your FMCT Cognitive AI Assistant. Ask me about your scanned items (e.g., "Did I log Bhindi?"), nutrition totals, or type "trend" to view your analytics dashboard!
+                        Hello! I am your FMCT Cognitive AI Assistant. Ask me to search any product (e.g., "Pepsi" or "Bhindi") to see its full nutritional matrix, query overall totals, or view intake trends!
                     </div>
                 </div>
 
                 <form id="aiChatForm" class="chat-input-row">
-                    <input type="text" id="aiInput" class="chat-input" placeholder="Ask AI about products (e.g. 'Bhindi'), nutrition, or trends..." required>
+                    <input type="text" id="aiInput" class="chat-input" placeholder="Ask AI about products (e.g. 'Pepsi'), nutrition, or trends..." required>
                     <button type="submit" class="btn-send">Ask AI</button>
                 </form>
             </div>
@@ -528,7 +528,7 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH ADVANCED AI AGENT INTENT & PRODUCT LOOKUP -->
+    <!-- FIREBASE MODULE SCRIPTS WITH FULL NUTRITIONAL MATRIX SEARCH -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -585,20 +585,25 @@
                     const data = doc.data();
                     const itemName = data.item || "Unknown Item";
                     const cals = parseFloat(data.calories) || 0;
-                    const sodium = parseFloat(data.sodium) || 0;
-                    const chol = parseFloat(data.chol) || 0;
-                    const sugar = parseFloat(data.total_sugar || data.added_sugar) || 0;
+                    const sodium = data.sodium || "0mg";
+                    const chol = data.chol || "0mg";
+                    const sugar = data.total_sugar || data.added_sugar || "0g";
+                    const date = data.date || "N/A";
 
                     liveDataCache.count++;
                     liveDataCache.totalCals += cals;
-                    liveDataCache.totalSodium += sodium;
-                    liveDataCache.totalChol += chol;
-                    liveDataCache.totalSugar += sugar;
+                    liveDataCache.totalSodium += parseFloat(sodium) || 0;
+                    liveDataCache.totalChol += parseFloat(chol) || 0;
+                    liveDataCache.totalSugar += parseFloat(sugar) || 0;
 
                     liveDataCache.items.push({
                         name: itemName.toLowerCase(),
                         originalName: itemName,
-                        calories: cals
+                        calories: cals,
+                        sodium: sodium,
+                        chol: chol,
+                        sugar: sugar,
+                        date: date
                     });
                 });
 
@@ -613,11 +618,16 @@
             }
         }
 
-        // Advanced AI Agent Logic Engine with Product Lookup & Trend Redirection
+        window.triggerSearchProductPrompt = function() {
+            const input = document.getElementById('aiInput');
+            input.placeholder = "Enter product name (e.g. Pepsi, Bhindi)...";
+            input.focus();
+        };
+
+        // Advanced AI Agent Logic Engine with Full Nutritional Matrix Lookup
         window.askAgent = function(query) {
             const chatContainer = document.getElementById('chatContainer');
             
-            // Add user message
             const userMsg = document.createElement('div');
             userMsg.className = 'chat-msg msg-user';
             userMsg.innerText = query;
@@ -625,38 +635,43 @@
 
             let reply = "";
             let showTrendButton = false;
-            const q = query.toLowerCase();
+            const q = query.toLowerCase().trim();
 
             if (q.includes('trend') || q.includes('intake') || q.includes('graph') || q.includes('analysis')) {
                 reply = `📈 Opening your nutritional trend analysis dashboard... Click below to view your full bar-line chart and distribution mix!`;
                 showTrendButton = true;
-            } else if (q.includes('product') || q.includes('how many') || q.includes('scanned') || q.includes('items')) {
+            } else if (q.includes('how many') || q.includes('products scanned') || q.includes('total items')) {
                 reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your FMCT database telemetry!`;
-            } else if (q.includes('calorie') || q.includes('cals')) {
+            } else if (q.includes('total calories') || q.includes('total cals')) {
                 const avg = liveDataCache.count > 0 ? (liveDataCache.totalCals / liveDataCache.count).toFixed(1) : 0;
                 reply = `🔥 Total Calories logged: ${liveDataCache.totalCals} kcal across ${liveDataCache.count} items (Average: ${avg} kcal per item).`;
-            } else if (q.includes('sodium') || q.includes('cholesterol') || q.includes('salt') || q.includes('sugar')) {
-                reply = `🧂 Nutritional Totals:\n• Sodium: ${liveDataCache.totalSodium} mg\n• Cholesterol: ${liveDataCache.totalChol} mg\n• Added Sugars: ${liveDataCache.totalSugar} g`;
-            } else if (q.includes('fmct') || q.includes('what is')) {
+            } else if (q.includes('show sodium') || q.includes('show cholesterol') || q.includes('overall sodium')) {
+                reply = `🧂 Aggregated Nutritional Totals:\n• Sodium: ${liveDataCache.totalSodium} mg\n• Cholesterol: ${liveDataCache.totalChol} mg\n• Added Sugars: ${liveDataCache.totalSugar} g`;
+            } else if (q.includes('what is fmct')) {
                 reply = `🧠 FMCT (Fatter Matter Cognitive Tracker) is an AI-enhanced nutrition telemetry system created by Priyadarshini Seal. It merges Raspberry Pi Pico 2 W microcontrollers with cloud database tracking and mindfulness prompts.`;
             } else {
-                // Check if user is asking about a specific product like "Bhindi"
+                // Product Search & Complete Nutritional Matrix Lookup
                 let foundItem = liveDataCache.items.find(i => q.includes(i.name) || i.name.includes(q));
+
                 if (foundItem) {
-                    reply = `✅ Found! "${foundItem.originalName}" is in your database with ${foundItem.calories} kcal.`;
+                    reply = `✅ <strong>Found: ${foundItem.originalName}</strong><br>` +
+                            `📊 <strong>Full Nutritional Matrix:</strong><br>` +
+                            `• 🔥 Calories: ${foundItem.calories} kcal<br>` +
+                            `• 🧂 Sodium: ${foundItem.sodium}<br>` +
+                            `• 🧈 Cholesterol: ${foundItem.chol}<br>` +
+                            `• 🍬 Total Sugars: ${foundItem.sugar}<br>` +
+                            `• 📅 Date Scanned: ${foundItem.date}`;
                 } else {
-                    // Extract potential product search keyword
-                    const words = query.split(' ');
-                    const potentialProduct = words[words.length - 1].replace('?', '');
-                    reply = `❌ This product ("${potentialProduct}") is not part of your current scanner items in Firestore.`;
+                    // Extract term for missing product notice
+                    const cleanTerm = query.replace(/(what|is|the|nutritional|matrix|of|for|search|product|find|\?)/gi, '').trim() || query;
+                    reply = `❌ This product ("${cleanTerm}") is not part of your current scanner items in Firestore.`;
                 }
             }
 
-            // Add Bot Response after slight delay
             setTimeout(() => {
                 const botMsg = document.createElement('div');
                 botMsg.className = 'chat-msg msg-bot';
-                botMsg.innerHTML = reply.replace(/\n/g, '<br>');
+                botMsg.innerHTML = reply;
 
                 if (showTrendButton) {
                     const btnDiv = document.createElement('div');
@@ -664,7 +679,6 @@
                     btnDiv.innerHTML = `<a href="trend.html" class="btn-trend" style="display: inline-block; padding: 6px 14px; font-size: 12px;">🚀 Launch Trend Dashboard</a>`;
                     botMsg.appendChild(btnDiv);
 
-                    // Automatically redirect user to trend.html after 2 seconds
                     setTimeout(() => {
                         window.location.href = "trend.html";
                     }, 2200);
