@@ -96,8 +96,15 @@
         .hero-left h1 {
             font-size: 38px;
             color: #5a2e00;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             line-height: 1.2;
+        }
+
+        .tagline {
+            font-size: 18px;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 20px;
         }
 
         .desc-box {
@@ -220,7 +227,7 @@
             text-decoration: none;
         }
 
-        /* DASHBOARD VIEW STYLES (Shown when logged in) */
+        /* DASHBOARD VIEW STYLES */
         #loggedInView {
             display: none;
             flex: 1;
@@ -284,7 +291,7 @@
             font-size: 13px;
         }
 
-        /* AI AGENT BOT SECTION STYLES */
+        /* AI AGENT BOT STYLES */
         .ai-bot-card {
             background: #ffffff;
             border-radius: 20px;
@@ -335,7 +342,7 @@
             background: #f8f9fa;
             border-radius: 14px;
             padding: 15px;
-            height: 180px;
+            height: 200px;
             overflow-y: auto;
             border: 1px solid #eef2f5;
             margin-bottom: 15px;
@@ -345,7 +352,7 @@
         }
 
         .chat-msg {
-            max-width: 80%;
+            max-width: 85%;
             padding: 10px 14px;
             border-radius: 12px;
             font-size: 13px;
@@ -422,11 +429,12 @@
     <!-- LOGGED OUT: SPLIT SCREEN LANDING & LOGIN -->
     <div id="loggedOutView">
         <div class="hero-left">
-            <h1>The Cognitive App Behind Every Bite.</h1>
+            <h1>Fatter Matter Cognitive Tracker</h1>
+            <div class="tagline">The Cognitive App Behind Every Bite</div>
             <div class="desc-box">
                 <div class="mini-food-art">🥗</div>
                 <p>
-                    Fatter Matter Calorie Tracker (FMCT) provides a faster, smarter, and significantly more efficient way to log and track nutrition using Raspberry Pi Pico hardware and cloud telemetry.
+                    Fatter Matter Cognitive Tracker (FMCT) provides a faster, smarter, and significantly more efficient way to log and track nutrition using Raspberry Pi Pico hardware and cloud telemetry.
                 </p>
             </div>
             <div class="about-snippet">
@@ -466,11 +474,10 @@
             </div>
 
             <div class="metrics-grid">
-                <!-- LIVE DATABASE METRICS WIDGET -->
                 <div class="card" style="border-color: #2ecc71;">
                     <h3>Live Database Telemetry (fmct_items)</h3>
                     <p>Real-time analytics fetched directly from your cloud database collection.</p>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
                         <div class="stat-badge" id="metricTotalItems" style="background: #e8f8f5; color: #27ae60;">Items Scanned: Loading...</div>
                         <div class="stat-badge" id="metricAvgCals" style="background: #e8f8f5; color: #27ae60;">Avg Calories: Loading...</div>
                     </div>
@@ -499,18 +506,18 @@
                 <div class="ai-chips">
                     <button class="chip" onclick="askAgent('How many products have been used?')">💡 Products Scanned?</button>
                     <button class="chip" onclick="askAgent('What are the total calories?')">🔥 Total Calories?</button>
-                    <button class="chip" onclick="askAgent('Show sodium and cholesterol totals')">🧂 Sodium & Cholesterol?</button>
-                    <button class="chip" onclick="askAgent('What is FMCT?')">🧠 What is FMCT?</button>
+                    <button class="chip" onclick="askAgent('Show me the trend of my food intake')">📈 Show Intake Trend</button>
+                    <button class="chip" onclick="askAgent('Is Bhindi in my items?')">🔍 Search Product (Bhindi)</button>
                 </div>
 
                 <div class="chat-box" id="chatContainer">
                     <div class="chat-msg msg-bot">
-                        Hello! I am your FMCT AI Assistant. Ask me anything about your scanned products, calorie averages, or nutritional totals from your cloud dataset!
+                        Hello! I am your FMCT Cognitive AI Assistant. Ask me about your scanned items (e.g., "Did I log Bhindi?"), nutrition totals, or type "trend" to view your analytics dashboard!
                     </div>
                 </div>
 
                 <form id="aiChatForm" class="chat-input-row">
-                    <input type="text" id="aiInput" class="chat-input" placeholder="Ask AI about your products or nutrition values..." required>
+                    <input type="text" id="aiInput" class="chat-input" placeholder="Ask AI about products (e.g. 'Bhindi'), nutrition, or trends..." required>
                     <button type="submit" class="btn-send">Ask AI</button>
                 </form>
             </div>
@@ -521,7 +528,7 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH LIVE DATABASE METRICS & AI AGENT INTELLIGENCE -->
+    <!-- FIREBASE MODULE SCRIPTS WITH ADVANCED AI AGENT INTENT & PRODUCT LOOKUP -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -564,7 +571,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Fetch Live Database Metrics from fmct_items
         async function fetchLiveMetrics() {
             try {
                 const querySnapshot = await getDocs(collection(db, "fmct_items"));
@@ -577,6 +583,7 @@
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    const itemName = data.item || "Unknown Item";
                     const cals = parseFloat(data.calories) || 0;
                     const sodium = parseFloat(data.sodium) || 0;
                     const chol = parseFloat(data.chol) || 0;
@@ -588,7 +595,11 @@
                     liveDataCache.totalChol += chol;
                     liveDataCache.totalSugar += sugar;
 
-                    liveDataCache.items.push(data.item || "Scanned Item");
+                    liveDataCache.items.push({
+                        name: itemName.toLowerCase(),
+                        originalName: itemName,
+                        calories: cals
+                    });
                 });
 
                 const avgCals = liveDataCache.count > 0 ? (liveDataCache.totalCals / liveDataCache.count).toFixed(1) : 0;
@@ -602,7 +613,7 @@
             }
         }
 
-        // AI Agent Logic Engine
+        // Advanced AI Agent Logic Engine with Product Lookup & Trend Redirection
         window.askAgent = function(query) {
             const chatContainer = document.getElementById('chatContainer');
             
@@ -612,11 +623,14 @@
             userMsg.innerText = query;
             chatContainer.appendChild(userMsg);
 
-            // Compute AI Answer based on real-time database state
             let reply = "";
+            let showTrendButton = false;
             const q = query.toLowerCase();
 
-            if (q.includes('product') || q.includes('how many') || q.includes('scanned') || q.includes('items')) {
+            if (q.includes('trend') || q.includes('intake') || q.includes('graph') || q.includes('analysis')) {
+                reply = `📈 Opening your nutritional trend analysis dashboard... Click below to view your full bar-line chart and distribution mix!`;
+                showTrendButton = true;
+            } else if (q.includes('product') || q.includes('how many') || q.includes('scanned') || q.includes('items')) {
                 reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your FMCT database telemetry!`;
             } else if (q.includes('calorie') || q.includes('cals')) {
                 const avg = liveDataCache.count > 0 ? (liveDataCache.totalCals / liveDataCache.count).toFixed(1) : 0;
@@ -626,14 +640,36 @@
             } else if (q.includes('fmct') || q.includes('what is')) {
                 reply = `🧠 FMCT (Fatter Matter Cognitive Tracker) is an AI-enhanced nutrition telemetry system created by Priyadarshini Seal. It merges Raspberry Pi Pico 2 W microcontrollers with cloud database tracking and mindfulness prompts.`;
             } else {
-                reply = `🤖 Based on your live telemetry: You have ${liveDataCache.count} products logged with a total of ${liveDataCache.totalCals} kcal, ${liveDataCache.totalSodium}mg sodium, and ${liveDataCache.totalChol}mg cholesterol.`;
+                // Check if user is asking about a specific product like "Bhindi"
+                let foundItem = liveDataCache.items.find(i => q.includes(i.name) || i.name.includes(q));
+                if (foundItem) {
+                    reply = `✅ Found! "${foundItem.originalName}" is in your database with ${foundItem.calories} kcal.`;
+                } else {
+                    // Extract potential product search keyword
+                    const words = query.split(' ');
+                    const potentialProduct = words[words.length - 1].replace('?', '');
+                    reply = `❌ This product ("${potentialProduct}") is not part of your current scanner items in Firestore.`;
+                }
             }
 
-            // Add Bot Response
+            // Add Bot Response after slight delay
             setTimeout(() => {
                 const botMsg = document.createElement('div');
                 botMsg.className = 'chat-msg msg-bot';
-                botMsg.innerText = reply;
+                botMsg.innerHTML = reply.replace(/\n/g, '<br>');
+
+                if (showTrendButton) {
+                    const btnDiv = document.createElement('div');
+                    btnDiv.style.marginTop = '10px';
+                    btnDiv.innerHTML = `<a href="trend.html" class="btn-trend" style="display: inline-block; padding: 6px 14px; font-size: 12px;">🚀 Launch Trend Dashboard</a>`;
+                    botMsg.appendChild(btnDiv);
+
+                    // Automatically redirect user to trend.html after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = "trend.html";
+                    }, 2200);
+                }
+
                 chatContainer.appendChild(botMsg);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }, 300);
