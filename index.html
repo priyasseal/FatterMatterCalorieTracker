@@ -468,7 +468,7 @@
             <div class="dashboard-header-card">
                 <div>
                     <h2 style="color: #5a2e00; margin-bottom: 5px;">Welcome to your FMCT Command Hub</h2>
-                    <p style="color: #8d6e63; font-size: 14px;">Your session is fully authenticated and synchronized with Google Cloud Firestore.</p>
+                    <p style="color: #8d6e63; font-size: 14px;">Your session is fully authenticated and synchronized with the cloud database.</p>
                 </div>
                 <div class="stat-badge" id="widgetTime">Live Sync: Active</div>
             </div>
@@ -485,7 +485,7 @@
 
                 <div class="card">
                     <h3>Hardware & Cloud Telemetry</h3>
-                    <p>Monitors real-time data synchronization between the Raspberry Pi Pico 2 W microcontroller, optical barcode scanner, and Google Cloud Firestore pipelines.</p>
+                    <p>Monitors real-time data synchronization between the Raspberry Pi Pico 2 W microcontroller, optical barcode scanner, and secure cloud pipelines.</p>
                     <div class="stat-badge">Pico W Connected</div>
                 </div>
 
@@ -528,7 +528,7 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH ROBUST PRODUCT INTENT & FIELD FALLBACKS -->
+    <!-- FIREBASE MODULE SCRIPTS WITH GENERIC MESSAGING -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -625,7 +625,7 @@
             input.focus();
         };
 
-        // Advanced AI Agent Logic Engine with Corrected Priority Routing
+        // Advanced AI Agent Logic Engine with Generic User-Facing Responses
         window.askAgent = function(query) {
             const chatContainer = document.getElementById('chatContainer');
             
@@ -639,14 +639,14 @@
             const q = query.toLowerCase().trim();
 
             if (!liveDataCache.loaded) {
-                reply = `⏳ Database telemetry is still syncing with Firestore. Please wait a moment and try again!`;
+                reply = `⏳ Database telemetry is still syncing. Please wait a moment and try again!`;
             } else if (q.includes('trend') || q.includes('intake') || q.includes('graph') || q.includes('analysis')) {
                 reply = `📈 Opening your nutritional trend analysis dashboard... Click below to view your full bar-line chart and distribution mix!`;
                 showTrendButton = true;
             } else if (q.includes('how many') || q.includes('products scanned') || q.includes('total items')) {
-                reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your FMCT database telemetry!`;
+                reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your database telemetry!`;
             } else {
-                // PRIORITIZE PRODUCT LOOKUP FIRST BEFORE GENERIC KEYWORDS
+                // PRIORITIZE PRODUCT LOOKUP FIRST
                 let foundItem = liveDataCache.items.find(i => q.includes(i.name) || i.name.includes(q));
 
                 if (foundItem) {
@@ -668,7 +668,7 @@
                     reply = `🧠 FMCT (Fatter Matter Cognitive Tracker) is an AI-enhanced nutrition telemetry system created by Priyadarshini Seal. It merges Raspberry Pi Pico 2 W microcontrollers with cloud database tracking and mindfulness prompts.`;
                 } else {
                     const cleanTerm = query.replace(/(what|is|the|nutritional|facts|matrix|of|for|search|product|find|\?)/gi, '').trim() || query;
-                    reply = `❌ This product ("${cleanTerm}") is not part of your current scanner items in Firestore.`;
+                    reply = `❌ This product ("${cleanTerm}") is not part of your current scanner items.`;
                 }
             }
 
