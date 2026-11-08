@@ -130,6 +130,12 @@
         .mini-food-art {
             font-size: 45px;
             animation: bounceArt 1.8s infinite ease-in-out;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .mini-food-art.fade-out {
+            opacity: 0;
+            transform: scale(0.8);
         }
 
         @keyframes bounceArt {
@@ -484,7 +490,7 @@
             </div>
 
             <div class="desc-box">
-                <div class="mini-food-art">🥗</div>
+                <div class="mini-food-art" id="cyclingDescIcon">🍔</div>
                 <p>
                     Fatter Matter Cognitive Tracker (FMCT) provides a faster, smarter, and significantly more efficient way to log and track nutrition using Raspberry Pi Pico hardware and cloud telemetry. Powered by an interactive Cognitive AI Intelligence Agent and real-time trend analytics, FMCT translates raw barcode telemetry into actionable nutritional insights and mindful eating habits.
                 </p>
@@ -576,6 +582,24 @@
     <footer>
         Created by Priyadarshini Seal © 2026
     </footer>
+
+    <!-- 5-SECOND ICON CYCLER SCRIPT -->
+    <script>
+        const foodIcons = ['🍔', '🥗', '🍕', '🥑'];
+        let currentIconIndex = 0;
+        const cyclingIconEl = document.getElementById('cyclingDescIcon');
+
+        setInterval(() => {
+            if (cyclingIconEl) {
+                cyclingIconEl.classList.add('fade-out');
+                setTimeout(() => {
+                    currentIconIndex = (currentIconIndex + 1) % foodIcons.length;
+                    cyclingIconEl.innerText = foodIcons[currentIconIndex];
+                    cyclingIconEl.classList.remove('fade-out');
+                }, 400);
+            }
+        }, 5000);
+    </script>
 
     <!-- FIREBASE MODULE SCRIPTS -->
     <script type="module">
