@@ -528,7 +528,7 @@
         Priyadarshini Seal © 2026
     </footer>
 
-    <!-- FIREBASE MODULE SCRIPTS WITH TOTAL NUTRIENTS & GENERIC PRODUCT SEARCH -->
+    <!-- FIREBASE MODULE SCRIPTS WITH PRIORITIZED PRODUCT LOOKUP & TOTAL NUTRIENTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -622,7 +622,7 @@
             input.focus();
         };
 
-        // Advanced AI Agent Logic Engine with Total Nutrients & Generic Product Lookup
+        // Advanced AI Agent Logic Engine with Prioritized Product Matching
         window.askAgent = function(query) {
             const chatContainer = document.getElementById('chatContainer');
             
@@ -640,17 +640,8 @@
                 showTrendButton = true;
             } else if (q.includes('how many') || q.includes('products scanned') || q.includes('total items')) {
                 reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your FMCT database telemetry!`;
-            } else if (q.includes('total nutrients') || q.includes('total nutrition') || q.includes('nutrients') || q.includes('nutrition')) {
-                reply = `🥗 <strong>Total Nutrients Aggregation:</strong><br>` +
-                        `• 🔥 Total Calories: ${liveDataCache.totalCals} kcal<br>` +
-                        `• 🧂 Total Sodium: ${liveDataCache.totalSodium} mg<br>` +
-                        `• 🧈 Total Cholesterol: ${liveDataCache.totalChol} mg<br>` +
-                        `• 🍬 Total Sugars: ${liveDataCache.totalSugar} g<br>` +
-                        `📊 Across ${liveDataCache.count} logged items.`;
-            } else if (q.includes('what is fmct')) {
-                reply = `🧠 FMCT (Fatter Matter Cognitive Tracker) is an AI-enhanced nutrition telemetry system created by Priyadarshini Seal. It merges Raspberry Pi Pico 2 W microcontrollers with cloud database tracking and mindfulness prompts.`;
             } else {
-                // Product Search & Complete Nutritional Matrix Lookup
+                // PRIORITIZE PRODUCT LOOKUP FIRST BEFORE GENERIC KEYWORDS
                 let foundItem = liveDataCache.items.find(i => q.includes(i.name) || i.name.includes(q));
 
                 if (foundItem) {
@@ -661,8 +652,17 @@
                             `• 🧈 Cholesterol: ${foundItem.chol}<br>` +
                             `• 🍬 Total Sugars: ${foundItem.sugar}<br>` +
                             `• 📅 Date Scanned: ${foundItem.date}`;
+                } else if (q.includes('total nutrients') || q.includes('total nutrition') || q.includes('nutrients') || q.includes('nutrition')) {
+                    reply = `🥗 <strong>Total Nutrients Aggregation:</strong><br>` +
+                            `• 🔥 Total Calories: ${liveDataCache.totalCals} kcal<br>` +
+                            `• 🧂 Total Sodium: ${liveDataCache.totalSodium} mg<br>` +
+                            `• 🧈 Total Cholesterol: ${liveDataCache.totalChol} mg<br>` +
+                            `• 🍬 Total Sugars: ${liveDataCache.totalSugar} g<br>` +
+                            `📊 Across ${liveDataCache.count} logged items.`;
+                } else if (q.includes('what is fmct')) {
+                    reply = `🧠 FMCT (Fatter Matter Cognitive Tracker) is an AI-enhanced nutrition telemetry system created by Priyadarshini Seal. It merges Raspberry Pi Pico 2 W microcontrollers with cloud database tracking and mindfulness prompts.`;
                 } else {
-                    const cleanTerm = query.replace(/(what|is|the|nutritional|matrix|of|for|search|product|find|\?)/gi, '').trim() || query;
+                    const cleanTerm = query.replace(/(what|is|the|nutritional|facts|matrix|of|for|search|product|find|\?)/gi, '').trim() || query;
                     reply = `❌ This product ("${cleanTerm}") is not part of your current scanner items in Firestore.`;
                 }
             }
