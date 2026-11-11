@@ -90,10 +90,17 @@
         }
 
         .main-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 30px auto;
             padding: 0 20px;
             width: 100%;
+        }
+
+        .charts-top-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
         }
 
         .card {
@@ -109,22 +116,16 @@
             font-size: 16px;
             font-weight: bold;
             color: #34495e;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .full-chart-box {
+        .chart-box-side {
             position: relative;
             width: 100%;
-            height: 340px;
-        }
-
-        .bubble-chart-box {
-            position: relative;
-            width: 100%;
-            height: 320px;
+            height: 310px;
         }
 
         .lower-row {
@@ -184,15 +185,9 @@
             line-height: 1.4;
         }
 
-        .interactive-bar, .data-point, .bubble-point {
+        .data-point, .bubble-point {
             cursor: pointer;
-            transition: opacity 0.2s ease, r 0.2s ease, transform 0.2s ease;
-        }
-
-        .interactive-bar:hover {
-            opacity: 1 !important;
-            stroke: #d35400;
-            stroke-width: 2px;
+            transition: r 0.2s ease, transform 0.2s ease;
         }
 
         .data-point:hover {
@@ -285,59 +280,58 @@
     </nav>
 
     <div class="main-container">
-        <!-- 1. FULL-WIDTH TREND GRAPH -->
-        <div class="card">
-            <div class="card-title">
-                Average Calorie Trend Analysis
-                <button class="btn-refresh" id="refreshBtn">🔄 Refresh Data</button>
+        <div id="chartTooltip"></div>
+
+        <!-- TOP ROW: SIDE-BY-SIDE GRAPHS -->
+        <div class="charts-top-row">
+            <!-- 1. LINE GRAPH (Average Calorie Trend Analysis) -->
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-title">
+                    Average Calorie Trend Analysis
+                    <button class="btn-refresh" id="refreshBtn">🔄 Refresh</button>
+                </div>
+                <div class="chart-box-side">
+                    <svg viewBox="0 0 600 310" width="100%" height="100%" style="overflow: visible;">
+                        <line x1="40" y1="20" x2="570" y2="20" stroke="#f1f2f6" stroke-width="1" />
+                        <line x1="40" y1="85" x2="570" y2="85" stroke="#f1f2f6" stroke-width="1" />
+                        <line x1="40" y1="150" x2="570" y2="150" stroke="#f1f2f6" stroke-width="1" />
+                        <line x1="40" y1="215" x2="570" y2="215" stroke="#f1f2f6" stroke-width="1" />
+                        <line x1="40" y1="280" x2="570" y2="280" stroke="#dcdde1" stroke-width="1" />
+
+                        <text x="30" y="285" font-size="10" fill="#7f8c8d" text-anchor="end">0</text>
+                        <text x="30" y="220" font-size="10" fill="#7f8c8d" text-anchor="end">50</text>
+                        <text x="30" y="155" font-size="10" fill="#7f8c8d" text-anchor="end">100</text>
+                        <text x="30" y="90" font-size="10" fill="#7f8c8d" text-anchor="end">150</text>
+                        <text x="30" y="25" font-size="10" fill="#7f8c8d" text-anchor="end">200</text>
+
+                        <line x1="40" y1="120" x2="570" y2="120" stroke="#2ecc71" stroke-width="1.5" stroke-dasharray="4,4" />
+
+                        <g id="lineChartContent"></g>
+                    </svg>
+                </div>
             </div>
-            <div class="full-chart-box">
-                <div id="chartTooltip"></div>
-                <svg viewBox="0 0 900 320" width="100%" height="100%" style="overflow: visible;">
-                    <line x1="50" y1="20" x2="870" y2="20" stroke="#f1f2f6" stroke-width="1" />
-                    <line x1="50" y1="85" x2="870" y2="85" stroke="#f1f2f6" stroke-width="1" />
-                    <line x1="50" y1="150" x2="870" y2="150" stroke="#f1f2f6" stroke-width="1" />
-                    <line x1="50" y1="215" x2="870" y2="215" stroke="#f1f2f6" stroke-width="1" />
-                    <line x1="50" y1="280" x2="870" y2="280" stroke="#dcdde1" stroke-width="1" />
 
-                    <text x="35" y="285" font-size="11" fill="#7f8c8d" text-anchor="end">0</text>
-                    <text x="35" y="220" font-size="11" fill="#7f8c8d" text-anchor="end">50</text>
-                    <text x="35" y="155" font-size="11" fill="#7f8c8d" text-anchor="end">100</text>
-                    <text x="35" y="90" font-size="11" fill="#7f8c8d" text-anchor="end">150</text>
-                    <text x="35" y="25" font-size="11" fill="#7f8c8d" text-anchor="end">200</text>
+            <!-- 2. BUBBLE GRAPH (FDA Health Classification) -->
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-title">
+                    FDA Health Classification Breakdown
+                </div>
+                <div class="chart-box-side">
+                    <svg viewBox="0 0 600 310" width="100%" height="100%" style="overflow: visible;">
+                        <line x1="40" y1="80" x2="570" y2="80" stroke="#f1f2f6" stroke-width="1" />
+                        <line x1="40" y1="200" x2="570" y2="200" stroke="#f1f2f6" stroke-width="1" />
+                        <line x1="40" y1="270" x2="570" y2="270" stroke="#dcdde1" stroke-width="1" />
 
-                    <line x1="50" y1="120" x2="870" y2="120" stroke="#2ecc71" stroke-width="1.5" stroke-dasharray="4,4" />
+                        <text x="30" y="85" font-size="11" font-weight="bold" fill="#e74c3c" text-anchor="end">UNHEALTHY</text>
+                        <text x="30" y="205" font-size="11" font-weight="bold" fill="#27ae60" text-anchor="end">HEALTHY</text>
 
-                    <g id="barLineChartContent"></g>
-                </svg>
+                        <g id="bubbleChartContent"></g>
+                    </svg>
+                </div>
             </div>
         </div>
 
-        <!-- 2. NEW BUBBLE GRAPH: FDA HEALTHY VS UNHEALTHY CLASSIFICATION -->
-        <div class="card">
-            <div class="card-title">
-                FDA Health Classification Breakdown (Healthy vs Unhealthy Products)
-            </div>
-            <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">
-                Bubble size reflects total calories. Positioned by product scan order. Classified by FDA thresholds: 
-                <strong>Unhealthy</strong> = Sodium ≥ 400mg, Cholesterol ≥ 60mg, or Sugars ≥ 20g.
-            </p>
-            <div class="bubble-chart-box">
-                <svg viewBox="0 0 900 280" width="100%" height="100%" style="overflow: visible;">
-                    <!-- Axis background lines -->
-                    <line x1="50" y1="70" x2="870" y2="70" stroke="#f1f2f6" stroke-width="1" />
-                    <line x1="50" y1="190" x2="870" y2="190" stroke="#f1f2f6" stroke-width="1" />
-                    <line x1="50" y1="250" x2="870" y2="250" stroke="#dcdde1" stroke-width="1" />
-
-                    <text x="35" y="75" font-size="12" font-weight="bold" fill="#e74c3c" text-anchor="end">UNHEALTHY</text>
-                    <text x="35" y="195" font-size="12" font-weight="bold" fill="#27ae60" text-anchor="end">HEALTHY</text>
-
-                    <g id="bubbleChartContent"></g>
-                </svg>
-            </div>
-        </div>
-
-        <!-- 3. LOWER ROW: ENLARGED PIE CHART & AGGREGATE STATS -->
+        <!-- LOWER ROW: PIE CHART & AGGREGATE STATS -->
         <div class="lower-row">
             <div class="card" style="margin-bottom: 0;">
                 <div class="card-title">Nutritional Distribution Mix</div>
@@ -375,7 +369,7 @@
             </div>
         </div>
 
-        <!-- 4. SCANNED ITEMS TELEMETRY LOG TABLE -->
+        <!-- SCANNED ITEMS TELEMETRY LOG TABLE -->
         <div class="table-card">
             <div class="card-title">Scanned Items Telemetry Log</div>
             <table>
@@ -504,9 +498,6 @@
                         sodium: data.sodium || "0mg",
                         chol: data.chol || "0mg",
                         sugar: data.total_sugar || data.added_sugar || "0g",
-                        numSodium: sodium,
-                        numChol: chol,
-                        numSugar: sugar,
                         fdaStatus: fdaStatus
                     });
                 });
@@ -520,7 +511,7 @@
                 document.getElementById('statFdaRatio').innerText = `🟢 ${healthyCount} Healthy | 🔴 ${unhealthyCount} Unhealthy`;
 
                 renderProfessionalPieChart(totalCals, totalChol, totalSugar, totalSodium);
-                renderLineBarChart(items);
+                renderLineGraph(items);
                 renderBubbleChart(items);
                 renderDataTable(items);
             } catch (error) {
@@ -578,40 +569,26 @@
             container.innerHTML = svgHTML;
         }
 
-        function renderLineBarChart(items) {
-            const container = document.getElementById('barLineChartContent');
+        function renderLineGraph(items) {
+            const container = document.getElementById('lineChartContent');
             container.innerHTML = '';
 
             if (items.length === 0) return;
 
-            const startX = 60;
-            const endX = 840;
+            const startX = 40;
+            const endX = 560;
             const stepX = items.length > 1 ? (endX - startX) / (items.length - 1) : 0;
 
-            const barColors = ['#ff9f43', '#2ed573', '#3742fa', '#ff4757', '#9b59b6', '#1abc9c', '#e67e22'];
-            let barsHTML = "";
             let pointsString = "";
 
             items.forEach((item, index) => {
                 const x = startX + (index * stepX);
                 const y = 280 - Math.min((item.calories / 200) * 260, 260);
-                const barHeight = 280 - y;
-                const color = barColors[index % barColors.length];
-
-                barsHTML += `<rect class="interactive-bar" x="${x - 12}" y="${y}" width="24" height="${barHeight}" fill="${color}" opacity="0.85" rx="4"
-                    data-date="${item.date}" 
-                    data-food="${item.item}" 
-                    data-cals="${item.calories} kcal" 
-                    data-sodium="${item.sodium}"
-                    data-chol="${item.chol}"
-                    data-sugar="${item.sugar}"
-                    data-fda="${item.fdaStatus}" />`;
-
                 pointsString += `${x},${y} `;
             });
 
-            container.innerHTML = barsHTML + `
-                <polyline points="${pointsString}" fill="none" stroke="#2ecc71" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+            container.innerHTML = `
+                <polyline points="${pointsString}" fill="none" stroke="#2ecc71" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
             `;
 
             items.forEach((item, index) => {
@@ -636,36 +613,31 @@
                 }
 
                 container.innerHTML += `
-                    <text x="${x}" y="300" font-size="11" fill="#7f8c8d" text-anchor="end" transform="rotate(-30, ${x}, 300)" font-weight="bold">${dateDisplay}</text>
+                    <text x="${x}" y="300" font-size="10" fill="#7f8c8d" text-anchor="end" transform="rotate(-30, ${x}, 300)" font-weight="bold">${dateDisplay}</text>
                 `;
             });
 
             attachTooltipListeners();
         }
 
-        /* NEW BUBBLE CHART RENDERER FOR FDA HEALTHY VS UNHEALTHY */
         function renderBubbleChart(items) {
             const container = document.getElementById('bubbleChartContent');
             container.innerHTML = '';
 
             if (items.length === 0) return;
 
-            const startX = 60;
-            const endX = 840;
+            const startX = 40;
+            const endX = 560;
             const stepX = items.length > 1 ? (endX - startX) / (items.length - 1) : 0;
 
             items.forEach((item, index) => {
                 const x = startX + (index * stepX);
-                // Unhealthy y = 70, Healthy y = 190
-                const y = item.fdaStatus === "UNHEALTHY" ? 70 : 190;
-                
-                // Radius mapped between 10px and 28px based on calories (max 250 kcal scale)
-                const radius = Math.max(10, Math.min(28, (item.calories / 250) * 28));
-                
+                const y = item.fdaStatus === "UNHEALTHY" ? 80 : 200;
+                const radius = Math.max(9, Math.min(22, (item.calories / 250) * 22));
                 const bubbleColor = item.fdaStatus === "UNHEALTHY" ? "#ff4757" : "#2ed573";
 
                 container.innerHTML += `
-                    <circle class="bubble-point" cx="${x}" cy="${y}" r="${radius}" fill="${bubbleColor}" opacity="0.8" stroke="#ffffff" stroke-width="2"
+                    <circle class="bubble-point" cx="${x}" cy="${y}" r="${radius}" fill="${bubbleColor}" opacity="0.85" stroke="#ffffff" stroke-width="2"
                         data-date="${item.date}" 
                         data-food="${item.item}" 
                         data-cals="${item.calories} kcal" 
@@ -673,8 +645,8 @@
                         data-chol="${item.chol}"
                         data-sugar="${item.sugar}"
                         data-fda="${item.fdaStatus}" />
-                    <text x="${x}" y="${y + 4}" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${item.calories}</text>
-                    <text x="${x}" y="265" font-size="10" fill="#7f8c8d" text-anchor="middle">${item.item.substring(0, 10)}</text>
+                    <text x="${x}" y="${y + 3}" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${item.calories}</text>
+                    <text x="${x}" y="285" font-size="9" fill="#7f8c8d" text-anchor="middle">${item.item.substring(0, 8)}</text>
                 `;
             });
 
@@ -683,7 +655,7 @@
 
         function attachTooltipListeners() {
             const tooltip = document.getElementById('chartTooltip');
-            const targets = document.querySelectorAll('.data-point, .interactive-bar, .bubble-point');
+            const targets = document.querySelectorAll('.data-point, .bubble-point');
 
             targets.forEach(target => {
                 target.addEventListener('mouseenter', (e) => {
