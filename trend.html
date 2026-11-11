@@ -121,6 +121,12 @@
             height: 340px;
         }
 
+        .bubble-chart-box {
+            position: relative;
+            width: 100%;
+            height: 320px;
+        }
+
         .lower-row {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
@@ -138,14 +144,14 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .stat-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
+            padding: 12px 16px;
             background: #f8f9fa;
             border-radius: 10px;
             border: 1px solid #eef2f5;
@@ -158,7 +164,7 @@
         }
 
         .stat-val {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             color: #2c3e50;
         }
@@ -174,13 +180,13 @@
             pointer-events: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 100;
-            max-width: 240px;
+            max-width: 250px;
             line-height: 1.4;
         }
 
-        .interactive-bar, .data-point {
+        .interactive-bar, .data-point, .bubble-point {
             cursor: pointer;
-            transition: opacity 0.2s ease, r 0.2s ease;
+            transition: opacity 0.2s ease, r 0.2s ease, transform 0.2s ease;
         }
 
         .interactive-bar:hover {
@@ -192,6 +198,12 @@
         .data-point:hover {
             r: 8;
             fill: #d35400;
+        }
+
+        .bubble-point:hover {
+            opacity: 1 !important;
+            stroke: #2c3e50;
+            stroke-width: 2.5px;
         }
 
         .table-card {
@@ -227,6 +239,27 @@
 
         tr:hover {
             background: #fafbfc;
+        }
+
+        .fda-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .fda-healthy {
+            background: #e8f8f5;
+            color: #27ae60;
+            border: 1px solid #a3e4d7;
+        }
+
+        .fda-unhealthy {
+            background: #fdf2e9;
+            color: #e74c3c;
+            border: 1px solid #f5b7b1;
         }
 
         footer {
@@ -280,7 +313,31 @@
             </div>
         </div>
 
-        <!-- 2. LOWER ROW: ENLARGED PIE CHART & AGGREGATE STATS -->
+        <!-- 2. NEW BUBBLE GRAPH: FDA HEALTHY VS UNHEALTHY CLASSIFICATION -->
+        <div class="card">
+            <div class="card-title">
+                FDA Health Classification Breakdown (Healthy vs Unhealthy Products)
+            </div>
+            <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">
+                Bubble size reflects total calories. Positioned by product scan order. Classified by FDA thresholds: 
+                <strong>Unhealthy</strong> = Sodium ≥ 400mg, Cholesterol ≥ 60mg, or Sugars ≥ 20g.
+            </p>
+            <div class="bubble-chart-box">
+                <svg viewBox="0 0 900 280" width="100%" height="100%" style="overflow: visible;">
+                    <!-- Axis background lines -->
+                    <line x1="50" y1="70" x2="870" y2="70" stroke="#f1f2f6" stroke-width="1" />
+                    <line x1="50" y1="190" x2="870" y2="190" stroke="#f1f2f6" stroke-width="1" />
+                    <line x1="50" y1="250" x2="870" y2="250" stroke="#dcdde1" stroke-width="1" />
+
+                    <text x="35" y="75" font-size="12" font-weight="bold" fill="#e74c3c" text-anchor="end">UNHEALTHY</text>
+                    <text x="35" y="195" font-size="12" font-weight="bold" fill="#27ae60" text-anchor="end">HEALTHY</text>
+
+                    <g id="bubbleChartContent"></g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- 3. LOWER ROW: ENLARGED PIE CHART & AGGREGATE STATS -->
         <div class="lower-row">
             <div class="card" style="margin-bottom: 0;">
                 <div class="card-title">Nutritional Distribution Mix</div>
@@ -310,17 +367,22 @@
                         <span class="stat-label">Total Added Sugars</span>
                         <span class="stat-val" id="statSugar">-- g</span>
                     </div>
+                    <div class="stat-row" style="background: #fff8ec; border-color: #ffd580;">
+                        <span class="stat-label" style="color: #d35400;">FDA Health Split</span>
+                        <span class="stat-val" id="statFdaRatio">--</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. SCANNED ITEMS TELEMETRY LOG TABLE -->
+        <!-- 4. SCANNED ITEMS TELEMETRY LOG TABLE -->
         <div class="table-card">
             <div class="card-title">Scanned Items Telemetry Log</div>
             <table>
                 <thead>
                     <tr>
                         <th>Item Name</th>
+                        <th>FDA Status</th>
                         <th>Date Scanned</th>
                         <th>Calories</th>
                         <th>Sodium</th>
@@ -330,7 +392,7 @@
                 </thead>
                 <tbody id="telemetryTableBody">
                     <tr>
-                        <td colspan="6" style="text-align: center; color: #95a5a6;">Loading telemetry data from database...</td>
+                        <td colspan="7" style="text-align: center; color: #95a5a6;">Loading telemetry data from database...</td>
                     </tr>
                 </tbody>
             </table>
@@ -388,6 +450,25 @@
             loadFirestoreData();
         });
 
+        function parseNumeric(valStr) {
+            if (!valStr) return 0.0;
+            let cleanStr = "";
+            for (let char of String(valStr)) {
+                if ((char >= '0' && char <= '9') || char === '.') {
+                    cleanStr += char;
+                }
+            }
+            const num = parseFloat(cleanStr);
+            return isNaN(num) ? 0.0 : num;
+        }
+
+        function evaluateFdaStatus(sod, chol, sug) {
+            if (sod >= 400 || chol >= 60 || sug >= 20) {
+                return "UNHEALTHY";
+            }
+            return "HEALTHY";
+        }
+
         async function loadFirestoreData() {
             try {
                 const querySnapshot = await getDocs(collection(db, "fmct_items"));
@@ -396,13 +477,19 @@
                 let totalChol = 0;
                 let totalSugar = 0;
                 let totalSodium = 0;
+                let healthyCount = 0;
+                let unhealthyCount = 0;
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const cals = parseFloat(data.calories) || 0;
-                    const chol = parseFloat(data.chol) || 0;
-                    const sugar = parseFloat(data.total_sugar || data.added_sugar) || 0;
-                    const sodium = parseFloat(data.sodium) || 0;
+                    const chol = parseNumeric(data.chol);
+                    const sugar = parseNumeric(data.total_sugar || data.added_sugar);
+                    const sodium = parseNumeric(data.sodium);
+
+                    const fdaStatus = evaluateFdaStatus(sodium, chol, sugar);
+                    if (fdaStatus === "HEALTHY") healthyCount++;
+                    else unhealthyCount++;
 
                     totalCals += cals;
                     totalChol += chol;
@@ -416,7 +503,11 @@
                         date: data.date || "2026-10-01",
                         sodium: data.sodium || "0mg",
                         chol: data.chol || "0mg",
-                        sugar: data.total_sugar || data.added_sugar || "0g"
+                        sugar: data.total_sugar || data.added_sugar || "0g",
+                        numSodium: sodium,
+                        numChol: chol,
+                        numSugar: sugar,
+                        fdaStatus: fdaStatus
                     });
                 });
 
@@ -426,9 +517,11 @@
                 document.getElementById('statSodium').innerText = `${totalSodium} mg`;
                 document.getElementById('statChol').innerText = `${totalChol} mg`;
                 document.getElementById('statSugar').innerText = `${totalSugar} g`;
+                document.getElementById('statFdaRatio').innerText = `🟢 ${healthyCount} Healthy | 🔴 ${unhealthyCount} Unhealthy`;
 
                 renderProfessionalPieChart(totalCals, totalChol, totalSugar, totalSodium);
                 renderLineBarChart(items);
+                renderBubbleChart(items);
                 renderDataTable(items);
             } catch (error) {
                 console.error("Error loading items:", error);
@@ -511,7 +604,8 @@
                     data-cals="${item.calories} kcal" 
                     data-sodium="${item.sodium}"
                     data-chol="${item.chol}"
-                    data-sugar="${item.sugar}" />`;
+                    data-sugar="${item.sugar}"
+                    data-fda="${item.fdaStatus}" />`;
 
                 pointsString += `${x},${y} `;
             });
@@ -531,7 +625,8 @@
                         data-cals="${item.calories} kcal" 
                         data-sodium="${item.sodium}"
                         data-chol="${item.chol}"
-                        data-sugar="${item.sugar}" />
+                        data-sugar="${item.sugar}"
+                        data-fda="${item.fdaStatus}" />
                 `;
 
                 let dateDisplay = item.date;
@@ -548,9 +643,47 @@
             attachTooltipListeners();
         }
 
+        /* NEW BUBBLE CHART RENDERER FOR FDA HEALTHY VS UNHEALTHY */
+        function renderBubbleChart(items) {
+            const container = document.getElementById('bubbleChartContent');
+            container.innerHTML = '';
+
+            if (items.length === 0) return;
+
+            const startX = 60;
+            const endX = 840;
+            const stepX = items.length > 1 ? (endX - startX) / (items.length - 1) : 0;
+
+            items.forEach((item, index) => {
+                const x = startX + (index * stepX);
+                // Unhealthy y = 70, Healthy y = 190
+                const y = item.fdaStatus === "UNHEALTHY" ? 70 : 190;
+                
+                // Radius mapped between 10px and 28px based on calories (max 250 kcal scale)
+                const radius = Math.max(10, Math.min(28, (item.calories / 250) * 28));
+                
+                const bubbleColor = item.fdaStatus === "UNHEALTHY" ? "#ff4757" : "#2ed573";
+
+                container.innerHTML += `
+                    <circle class="bubble-point" cx="${x}" cy="${y}" r="${radius}" fill="${bubbleColor}" opacity="0.8" stroke="#ffffff" stroke-width="2"
+                        data-date="${item.date}" 
+                        data-food="${item.item}" 
+                        data-cals="${item.calories} kcal" 
+                        data-sodium="${item.sodium}"
+                        data-chol="${item.chol}"
+                        data-sugar="${item.sugar}"
+                        data-fda="${item.fdaStatus}" />
+                    <text x="${x}" y="${y + 4}" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${item.calories}</text>
+                    <text x="${x}" y="265" font-size="10" fill="#7f8c8d" text-anchor="middle">${item.item.substring(0, 10)}</text>
+                `;
+            });
+
+            attachTooltipListeners();
+        }
+
         function attachTooltipListeners() {
             const tooltip = document.getElementById('chartTooltip');
-            const targets = document.querySelectorAll('.data-point, .interactive-bar');
+            const targets = document.querySelectorAll('.data-point, .interactive-bar, .bubble-point');
 
             targets.forEach(target => {
                 target.addEventListener('mouseenter', (e) => {
@@ -560,8 +693,11 @@
                     const sodium = e.target.getAttribute('data-sodium');
                     const chol = e.target.getAttribute('data-chol');
                     const sugar = e.target.getAttribute('data-sugar');
+                    const fda = e.target.getAttribute('data-fda');
 
-                    tooltip.innerHTML = `<strong>📅 Date:</strong> ${date}<br><strong>🍔 Item:</strong> ${food}<br><strong>🔥 Calories:</strong> ${cals}<br><strong>🧂 Sodium:</strong> ${sodium}<br><strong>🧈 Chol:</strong> ${chol}<br><strong>🍬 Sugar:</strong> ${sugar}`;
+                    const fdaBadge = fda === "HEALTHY" ? "🟢 HEALTHY" : "🔴 UNHEALTHY";
+
+                    tooltip.innerHTML = `<strong>📅 Date:</strong> ${date}<br><strong>🍔 Item:</strong> ${food}<br><strong>🏷️ FDA:</strong> ${fdaBadge}<br><strong>🔥 Calories:</strong> ${cals}<br><strong>🧂 Sodium:</strong> ${sodium}<br><strong>🧈 Chol:</strong> ${chol}<br><strong>🍬 Sugar:</strong> ${sugar}`;
                     tooltip.style.display = 'block';
                 });
 
@@ -582,8 +718,12 @@
 
             items.forEach(item => {
                 const tr = document.createElement('tr');
+                const badgeClass = item.fdaStatus === "HEALTHY" ? "fda-healthy" : "fda-unhealthy";
+                const badgeIcon = item.fdaStatus === "HEALTHY" ? "🟢" : "🔴";
+
                 tr.innerHTML = `
                     <td style="font-weight: bold; color: #2c3e50;">${item.item}</td>
+                    <td><span class="fda-badge ${badgeClass}">${badgeIcon} ${item.fdaStatus}</span></td>
                     <td style="color: #7f8c8d;">${item.date}</td>
                     <td style="font-weight: bold; color: #e67e22;">${item.calories} kcal</td>
                     <td>${item.sodium}</td>
