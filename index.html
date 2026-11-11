@@ -149,7 +149,6 @@
             color: #6e472e;
         }
 
-        /* BLOOKET INSPIRED FLOATING ANIMATED GIF ELEMENTS */
         .blook-container {
             display: flex;
             gap: 20px;
@@ -481,7 +480,6 @@
         <div class="hero-left">
             <h1>The Cognitive App Behind Every Bite</h1>
             
-            <!-- BLOOKET INSPIRED ANIMATED GIF / FOOD BLOOX -->
             <div class="blook-container">
                 <div class="floating-blook">🍔</div>
                 <div class="floating-blook">🥗</div>
@@ -535,6 +533,7 @@
                     <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
                         <div class="stat-badge" id="metricTotalItems" style="background: #e8f8f5; color: #27ae60;">Items Scanned: Loading...</div>
                         <div class="stat-badge" id="metricTotalNutrients" style="background: #e8f8f5; color: #27ae60;">Total Nutrients: Loading...</div>
+                        <div class="stat-badge" id="metricFdaStatus" style="background: #eef2f5; color: #2c3e50;">FDA Classification: Loading...</div>
                     </div>
                 </div>
 
@@ -567,7 +566,7 @@
 
                 <div class="chat-box" id="chatContainer">
                     <div class="chat-msg msg-bot">
-                        Hello! I am your FMCT Cognitive AI Assistant. Ask me to search any product (e.g., "Enter Product Name") to see its full nutritional matrix, query overall nutrient totals, or view intake trends!
+                        Hello! I am your FMCT Cognitive AI Assistant. Ask me to search any product (e.g., "Enter Product Name") to see its full nutritional matrix, FDA health classification, overall nutrient totals, or view intake trends!
                     </div>
                 </div>
 
@@ -628,6 +627,8 @@
             totalSodium: 0,
             totalChol: 0,
             totalSugar: 0,
+            healthyCount: 0,
+            unhealthyCount: 0,
             items: []
         };
 
@@ -645,6 +646,29 @@
         setInterval(updateClock, 1000);
         updateClock();
 
+        function parseNumeric(valStr) {
+            if (!valStr) return 0.0;
+            let cleanStr = "";
+            for (let char of String(valStr)) {
+                if ((char >= '0' && char <= '9') || char === '.') {
+                    cleanStr += char;
+                }
+            }
+            const num = parseFloat(cleanStr);
+            return isNaN(num) ? 0.0 : num;
+        }
+
+        function evaluateFdaStatus(item) {
+            const sod = parseNumeric(item.sodium);
+            const chol = parseNumeric(item.chol);
+            const addSug = parseNumeric(item.added_sugar || item.total_sugar);
+
+            if (sod >= 400 || chol >= 60 || addSug >= 20) {
+                return "UNHEALTHY";
+            }
+            return "HEALTHY";
+        }
+
         async function fetchLiveMetrics() {
             try {
                 const querySnapshot = await getDocs(collection(db, "fmct_items"));
@@ -653,6 +677,8 @@
                 liveDataCache.totalSodium = 0;
                 liveDataCache.totalChol = 0;
                 liveDataCache.totalSugar = 0;
+                liveDataCache.healthyCount = 0;
+                liveDataCache.unhealthyCount = 0;
                 liveDataCache.items = [];
 
                 querySnapshot.forEach((doc) => {
@@ -664,11 +690,19 @@
                     const sugar = data.total_sugar || data.added_sugar || "0g";
                     const date = data.date || "N/A";
 
+                    const status = evaluateFdaStatus({ sodium, chol, added_sugar: sugar });
+
+                    if (status === "HEALTHY") {
+                        liveDataCache.healthyCount++;
+                    } else {
+                        liveDataCache.unhealthyCount++;
+                    }
+
                     liveDataCache.count++;
                     liveDataCache.totalCals += cals;
-                    liveDataCache.totalSodium += parseFloat(sodium) || 0;
-                    liveDataCache.totalChol += parseFloat(chol) || 0;
-                    liveDataCache.totalSugar += parseFloat(sugar) || 0;
+                    liveDataCache.totalSodium += parseNumeric(sodium);
+                    liveDataCache.totalChol += parseNumeric(chol);
+                    liveDataCache.totalSugar += parseNumeric(sugar);
 
                     liveDataCache.items.push({
                         name: itemName.toLowerCase(),
@@ -677,7 +711,8 @@
                         sodium: sodium,
                         chol: chol,
                         sugar: sugar,
-                        date: date
+                        date: date,
+                        fdaStatus: status
                     });
                 });
 
@@ -685,8 +720,11 @@
 
                 const itemsEl = document.getElementById('metricTotalItems');
                 const nutrientsEl = document.getElementById('metricTotalNutrients');
+                const fdaEl = document.getElementById('metricFdaStatus');
+
                 if (itemsEl) itemsEl.innerText = `Items Scanned: ${liveDataCache.count}`;
                 if (nutrientsEl) nutrientsEl.innerText = `Total Nutrients: ${liveDataCache.totalCals} kcal | ${liveDataCache.totalSodium}mg Na`;
+                if (fdaEl) fdaEl.innerText = `🟢 Healthy: ${liveDataCache.healthyCount} | 🔴 Unhealthy: ${liveDataCache.unhealthyCount}`;
             } catch (error) {
                 console.error("Error fetching live metrics:", error);
             }
@@ -713,15 +751,17 @@
             if (!liveDataCache.loaded) {
                 reply = `⏳ Database telemetry is still syncing. Please wait a moment and try again!`;
             } else if (q.includes('trend') || q.includes('intake') || q.includes('graph') || q.includes('analysis')) {
-                reply = `📈 Opening your nutritional trend analysis dashboard... Click below to view your full bar-line chart and distribution mix!`;
+                reply = `📈 Opening your nutritional trend analysis dashboard... Click below to view your full bar-line chart, health classification graph, and distribution mix!`;
                 showTrendButton = true;
             } else if (q.includes('how many') || q.includes('products scanned') || q.includes('total items')) {
-                reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your database telemetry!`;
+                reply = `📊 You have logged a total of ${liveDataCache.count} product(s) in your database telemetry! (${liveDataCache.healthyCount} Healthy, ${liveDataCache.unhealthyCount} Unhealthy)`;
             } else {
                 let foundItem = liveDataCache.items.find(i => q.includes(i.name) || i.name.includes(q));
 
                 if (foundItem) {
+                    const statusColor = foundItem.fdaStatus === "HEALTHY" ? "🟢" : "🔴";
                     reply = `✅ <strong>Found: ${foundItem.originalName}</strong><br>` +
+                            `🏷️ <strong>FDA Classification:</strong> ${statusColor} <strong>${foundItem.fdaStatus}</strong><br>` +
                             `📊 <strong>Full Nutritional Matrix:</strong><br>` +
                             `• 🔥 Calories: ${foundItem.calories} kcal<br>` +
                             `• 🧂 Sodium: ${foundItem.sodium}<br>` +
@@ -734,7 +774,7 @@
                             `• 🧂 Total Sodium: ${liveDataCache.totalSodium} mg<br>` +
                             `• 🧈 Total Cholesterol: ${liveDataCache.totalChol} mg<br>` +
                             `• 🍬 Total Sugars: ${liveDataCache.totalSugar} g<br>` +
-                            `📊 Across ${liveDataCache.count} logged items.`;
+                            `📊 Across ${liveDataCache.count} logged items (${liveDataCache.healthyCount} Healthy, ${liveDataCache.unhealthyCount} Unhealthy).`;
                 } else if (q.includes('what is fmct')) {
                     reply = `🧠 FMCT (Fatter Matter Cognitive Tracker) is an AI-enhanced nutrition telemetry system created by Priyadarshini Seal. It merges Raspberry Pi Pico 2 W microcontrollers with cloud database tracking and mindfulness prompts.`;
                 } else {
