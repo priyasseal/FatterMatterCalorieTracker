@@ -96,7 +96,7 @@
             width: 100%;
         }
 
-        .charts-top-row {
+        .charts-top-row, .lower-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
@@ -128,13 +128,6 @@
             height: 310px;
         }
 
-        .lower-row {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-
         .pie-chart-box {
             position: relative;
             width: 100%;
@@ -146,6 +139,7 @@
             flex-direction: column;
             justify-content: center;
             gap: 12px;
+            height: 310px;
         }
 
         .stat-row {
@@ -334,7 +328,7 @@
             </div>
         </div>
 
-        <!-- LOWER ROW: PIE CHART & AGGREGATE STATS -->
+        <!-- LOWER ROW: PIE CHART & AGGREGATE STATS (Now perfectly 1fr / 1fr aligned) -->
         <div class="lower-row">
             <div class="card" style="margin-bottom: 0;">
                 <div class="card-title">Nutritional Distribution Mix</div>
@@ -373,7 +367,7 @@
         </div>
 
         <!-- SCANNED ITEMS TELEMETRY LOG TABLE -->
-        <div class="table-card">
+        <div class="table-card" style="margin-top: 25px;">
             <div class="card-title">Scanned Items Telemetry Log</div>
             <table>
                 <thead>
